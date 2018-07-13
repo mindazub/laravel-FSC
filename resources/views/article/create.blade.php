@@ -59,6 +59,21 @@
                             </div>
 
                             <div class="form-group">
+                                <label>{{ __('Categories') }}</label>
+                                @foreach($categories as $category)
+                                    <br>
+                                    <label for="category_{{ $category->id }}">
+                                        <input type="checkbox" id="{{ $category->id }}" name="category[]" value="{{ $category->id }}"
+
+                                        >
+                                        {{ __($category->title) }}
+
+                                    </label>
+                                @endforeach
+                            </div>
+
+
+                            <div class="form-group">
                                 <input class="btn btn-success" type="submit" value="{{ __('Save') }}">
                             </div>
 

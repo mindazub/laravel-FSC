@@ -55,6 +55,21 @@
                             </div>
 
                             <div class="form-group">
+                                <label>{{ __('Categories') }}</label>
+                                @foreach($categories as $category)
+                                    <br>
+                                    <label for="category_{{ $category->id }}">
+                                        <input type="checkbox" id="{{ $category->id }}" name="category[]" value="{{ $category->id }}"
+                                                {{ ($category->id == in_array($category->id, old('category', $article->categories->pluck('id')->toArray())) ? 'checked' : '') }}
+                                        >
+                                            {{ __($category->title) }}
+
+                                    </label>
+                                @endforeach
+                            </div>
+
+
+                            <div class="form-group">
                                 <label for="slug">{{ __('Slug') }}:</label>
                                 <input id="slug" class="form-control" type="text" name="slug"
                                        value="{{ old('slug', $article->slug) }}">

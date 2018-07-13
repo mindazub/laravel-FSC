@@ -36,6 +36,11 @@ class ArticleStoreRequest extends FormRequest
             'title' => 'required|min:3|max:191|string',
             'description' => 'required',
             'author_id' => 'required|exists:authors,id',
+            'category' => [
+                'nullable',
+                'array',
+                'exists:categories,id'
+            ]
         ];
     }
 
@@ -108,5 +113,10 @@ class ArticleStoreRequest extends FormRequest
     public function getTitle(): ? string
     {
         return $this->input('title');
+    }
+
+    public function getCategoriesIds(): array
+    {
+        return $this->input('category', []);
     }
 }
