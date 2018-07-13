@@ -60,6 +60,7 @@ class ArticleController extends Controller
         ];
 
         $article = Article::create($data);
+        // galima ir su sync()
         $article->categories()->attach($request->getCategoriesIds());
 
 
