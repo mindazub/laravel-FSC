@@ -10,6 +10,7 @@ use App\Category;
 use App\Http\Requests\ArticleStoreRequest;
 use App\Http\Requests\ArticleUpdateRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class ArticleController extends Controller
@@ -26,7 +27,14 @@ class ArticleController extends Controller
      */
     public function index(): View
     {
-        $articles = Article::all();
+        /** @var  $articles */
+        /**
+         * @vat LengthAwarePaginator $articles
+         */
+        $articles = Article::paginate(2);
+
+
+//        dd($articles);
 
         return view('article.list', compact('articles'));
     }
@@ -38,7 +46,10 @@ class ArticleController extends Controller
      */
     public function create(): View
     {
+
+        /** @var Collection $categories */
         $categories = Category::all();
+        /** @var Collection $authors */
         $authors = Author::all();
 
         return view('article.create', compact('authors', 'categories'));
