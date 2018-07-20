@@ -11,12 +11,12 @@ namespace App\Exceptions;
 
 use Exception;
 
-class AuthorException extends \Exception
+/**
+ * Class AuthorException
+ * @package App\Exceptions
+ */
+class AuthorException extends ApiDataException
 {
-    const NO_DATA_FOUND = 1001;
 
-    public function noData(): AuthorException
-    {
-        return new self('No data found', self::NO_DATA_FOUND);
-    }
+
 }

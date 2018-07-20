@@ -17,5 +17,23 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(['prefix' => 'articles'], function(){
+    Route::get('/', 'API\\ArticleController@getPaginate');
+    Route::get('one/{article}', 'API\\ArticleController@getById');
+    Route::get('full', 'API\\ArticleController@getFullData');
+});
 
-Route::get('articles', 'API\\ArticleController@getPaginate');
+
+Route::group(['prefix' => 'categories'], function(){
+    Route::get('/', 'API\\CategoryController@getPaginate');
+    Route::get('one/{category}', 'API\\CategoryController@getById');
+
+});
+
+
+Route::group(
+    ['prefix' => 'authors'], function (){
+    Route::get('/', 'API\\AuthorController@getPaginate');
+    // full reiktu pasidaryti
+    Route::get('one/{author}', 'API\\AuthorController@getById');
+});

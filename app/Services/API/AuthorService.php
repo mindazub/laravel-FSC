@@ -14,6 +14,7 @@ namespace App\Services\API;
 use App\Author;
 use App\Exceptions\AuthorException;
 use App\Services\ApiService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
@@ -25,7 +26,7 @@ class AuthorService extends ApiService
     /**
      * @param int $page
      * @return LengthAwarePaginator
-     * @throws AuthorException
+     * @throws \App\Exceptions\ApiDataException
      */
     public function getPaginateData(int $page = 1): LengthAwarePaginator
     {
@@ -37,5 +38,14 @@ class AuthorService extends ApiService
         }
 
         return $authors;
+    }
+
+    /**
+     * @param int $authorid
+     * @return Author
+     */
+    public function getById(int $authorid): Author
+    {
+        return Author::findOrFail($authorid);
     }
 }

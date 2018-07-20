@@ -25,7 +25,7 @@ class ArticleService extends ApiService
     /**
      * @param int $page
      * @return LengthAwarePaginator
-     * @throws ArticleException
+     * @throws \App\Exceptions\ApiDataException
      */
     public function getPaginateData(int $page = 1): LengthAwarePaginator
     {
@@ -38,5 +38,34 @@ class ArticleService extends ApiService
         }
 
         return $articles;
+    }
+
+    /**
+     * @param int $page
+     * @return LengthAwarePaginator
+     */
+    public function getFullData(int $page = 1): LengthAwarePaginator
+    {
+        /** @var LengthAwarePaginator $articles */
+        $articles = Article::with('author', 'categories')->paginate(self::PER_PAGE,['*'], 'page', $page);
+
+        if($articles->isEmpty())
+        {
+            throw ArticleException::noData();
+        }
+
+        return $articles;
+
+    }
+
+    public function getById(int $articleId = 1): Article
+    {
+
+
+      return  Article::findOrFail($articleId);
+
+
+
+
     }
 }
