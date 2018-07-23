@@ -36,7 +36,7 @@ class AuthorController extends Controller
                 'current_page'=>$authors->currentPage(),
                 'total_page'=>$authors->lastPage()
             ]);
-        }catch (AuthorException $exception) {
+        }catch (ModelNotFoundException $exception) {
 
             logger($exception->getMessage(), [
                     'trace' => $exception->getTrace(),
@@ -76,7 +76,7 @@ class AuthorController extends Controller
                 'data' => $authors,
             ]);
 
-        } catch (AuthorException $exception) {
+        } catch (ModelNotFoundException $exception) {
             return response()->json([
                 'success' => false,
                 'message' => $exception->getMessage(),
@@ -96,7 +96,7 @@ class AuthorController extends Controller
     /**
      *
      */
-    public function getById(Request $request, int $id): AuthorDTO
+    public function getById(Request $request, int $id)
     {
 
 

@@ -42,6 +42,11 @@ class AuthorService extends ApiService
     }
 
 
+    /**
+     * @param int $page
+     * @return LengthAwarePaginator
+     * @throws \App\Exceptions\ApiDataException
+     */
     public function getFullData(int $page = 1): LengthAwarePaginator
     {
         /** @var LengthAwarePaginator $articles */
@@ -60,11 +65,16 @@ class AuthorService extends ApiService
     /**
      * @param int $authorId
      * @return AuthorDTO
+     * @throws \App\Exceptions\ApiDataException
      */
     public function getById(int $authorId): AuthorDTO
     {
         /** @var Author $author */
-        $author = Author::findOrFail($authorId);
+        $author = Author::find($authorId);
+
+        if (is_null($author)){
+            throw AuthorException::noData();
+        }
 
         $dto = new AuthorDTO();
 

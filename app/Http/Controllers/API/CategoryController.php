@@ -130,6 +130,13 @@ class CategoryController extends Controller
 //                'data' => $category,
 //
 //            ]);
+
+
+
+
+
+
+
             return $category;
 
         } catch (ModelNotFoundException $exception)
@@ -149,7 +156,7 @@ class CategoryController extends Controller
         } catch (\Throwable $exception)
         {
 
-            dd($exception->getMessage());
+//            dd($exception->getMessage());
 
             return response()->json([
 
