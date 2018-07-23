@@ -15,6 +15,8 @@ class CreateArticleCategoryTable extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('article_category');
+
         Schema::create('article_category', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
