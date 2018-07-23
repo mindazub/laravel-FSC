@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Throwable;
 
 /**
  * Class CategoryController
@@ -31,6 +32,7 @@ class CategoryController extends Controller
     /**
      * @param Request $request
      * @return JsonResponse
+     * @throws ApiDataException
      */
     public function getPaginate(Request $request): JsonResponse
     {
@@ -112,7 +114,7 @@ class CategoryController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function getById(Request $request, int $id): JsonResponse
+    public function getById(Request $request, int $id)
     {
 
 //dd($id);
@@ -123,11 +125,12 @@ class CategoryController extends Controller
 
 //            dd($category);
 
-            return response()->json([
-                'success' => true,
-                'data' => $category,
-
-            ]);
+//            return response()->json([
+//                'success' => true,
+//                'data' => $category,
+//
+//            ]);
+            return $category;
 
         } catch (ModelNotFoundException $exception)
         {
@@ -145,7 +148,12 @@ class CategoryController extends Controller
             ], JsonResponse::HTTP_NOT_FOUND);
         } catch (\Throwable $exception)
         {
+
+            dd($exception->getMessage());
+
             return response()->json([
+
+
                 'success' =>false,
                 'message' =>'Something wrong',
                 'code' => $exception->getCode(),

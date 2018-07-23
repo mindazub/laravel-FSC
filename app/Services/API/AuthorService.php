@@ -12,6 +12,7 @@ declare(strict_types = 1);
 namespace App\Services\API;
 
 use App\Author;
+use App\DTO\AuthorDTO;
 use App\Exceptions\AuthorException;
 use App\Services\ApiService;
 use Illuminate\Http\JsonResponse;
@@ -51,23 +52,24 @@ class AuthorService extends ApiService
             throw AuthorException::noData();
         }
 
-        return $categories;
+        return $authors;
 
     }
 
 
-
-
-
-
-
-
     /**
-     * @param int $authorid
-     * @return Author
+     * @param int $authorId
+     * @return AuthorDTO
      */
-    public function getById(int $authorid): Author
+    public function getById(int $authorId): AuthorDTO
     {
-        return Author::findOrFail($authorid);
+        /** @var Author $author */
+        $author = Author::findOrFail($authorId);
+
+        $dto = new AuthorDTO();
+
+        return $dto->setAuthorId($author->id)
+            ->setFirstName($author->first_name)
+            ->setLastName($author->last_name);
     }
 }

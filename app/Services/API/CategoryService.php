@@ -12,6 +12,7 @@ declare(strict_types = 1);
 namespace App\Services\API;
 
 use App\Category;
+use App\DTO\CategoryDTO;
 use App\Exceptions\CategoryException;
 use App\Services\ApiService;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -62,9 +63,19 @@ class CategoryService extends ApiService
      * @param int $categoryId
      * @return Category
      */
-    public function getById(int $categoryId = 1): Category
+    public function getById(int $categoryId = 1): CategoryDTO
     {
         //dd($categoryId);
-        return  Category::findOrFail($categoryId);
+
+        $category = Category::findOrFail($categoryId);
+
+
+        $dto = new CategoryDTO();
+
+        return $dto->setCategoryId($category->id)
+        ->setTitle($category->title)
+        ->setSlug($category->slug);
+
+
     }
 }

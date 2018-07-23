@@ -96,6 +96,8 @@ class ArticleController extends Controller
                 'code' => $exception->getCode(),
              ], JsonResponse::HTTP_NOT_FOUND);
         } catch (Throwable $exception) {
+
+
             return response()->json([
                 'success' => false,
                 'message' => 'Something wrong ...',
@@ -143,6 +145,8 @@ class ArticleController extends Controller
             ], JsonResponse::HTTP_NOT_FOUND);
         } catch (\Throwable $exception)
         {
+//            dd($exception->getMessage());
+
             return response()->json([
                 'success' =>false,
                 'message' =>'Something wrong',

@@ -10,6 +10,7 @@ declare(strict_types = 1);
 
 namespace App\Services\API;
 
+use App\DTO\ArticleDTO;
 use App\Exceptions\ArticleException;
 use App\Services\ApiService;
 use \Exception;
@@ -43,6 +44,7 @@ class ArticleService extends ApiService
     /**
      * @param int $page
      * @return LengthAwarePaginator
+     * @throws \App\Exceptions\ApiDataException
      */
     public function getFullData(int $page = 1): LengthAwarePaginator
     {
@@ -58,11 +60,18 @@ class ArticleService extends ApiService
 
     }
 
-    public function getById(int $articleId = 1): Article
+    public function getById(int $articleId = 1): ArticleDTO
     {
 
+        $article = Article::findOrFail($articleId);
 
-      return  Article::findOrFail($articleId);
+        $dto = new ArticleDTO();
+
+
+      return  $dto->setArticleId($article->id)
+          ->setTitle($article->title)
+          ->setDescription($article->description)
+          ->setSlug($article->slug);
 
 
 

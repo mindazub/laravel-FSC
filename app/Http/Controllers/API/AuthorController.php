@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API;
 
+use App\DTO\AuthorDTO;
 use App\Exceptions\AuthorException;
 use App\Services\API\AuthorService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -95,7 +96,7 @@ class AuthorController extends Controller
     /**
      *
      */
-    public function getById(Request $request, int $id): JsonResponse
+    public function getById(Request $request, int $id): AuthorDTO
     {
 
 
@@ -103,11 +104,18 @@ class AuthorController extends Controller
 
             $author = $this->authorService->getById($id);
 
-            return response()->json([
-                'success' => true,
-                'data' => $author,
+//              viskas per DTO padarome
+//
+//            return response()->json([
+//                'success' => true,
+//                'data' => $author,
+//
+//            ]);
 
-            ]);
+//            dd($author);
+
+            return $author;
+
 
         } catch (ModelNotFoundException $exception)
         {
@@ -125,6 +133,8 @@ class AuthorController extends Controller
                 ], JsonResponse::HTTP_NOT_FOUND);
         } catch (\Throwable $exception)
         {
+//            dd($exception->getMessage());
+
             return response()->json([
                 'success' =>false,
                 'message' =>'Something wrong',
