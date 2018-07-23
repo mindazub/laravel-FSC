@@ -25,17 +25,46 @@ class CategoryService extends ApiService
     /**
      * @param int $page
      * @return LengthAwarePaginator
-     * @throws CategoryException
+     * @throws \App\Exceptions\ApiDataException
      */
     public function getPaginateData(int $page = 1): LengthAwarePaginator
     {
         /** @var LengthAwarePaginator $authors */
-        $authors = Category::paginate(self::PER_PAGE, ['*'], 'page', $page);
+        $categories = Category::paginate(self::PER_PAGE, ['*'], 'page', $page);
 
-        if ($authors->isEmpty()) {
+        if ($categories->isEmpty()) {
             throw CategoryException::noData();
         }
 
-        return $authors;
+        return $categories;
+    }
+
+    /**
+     * @param int $page
+     * @return LengthAwarePaginator
+     * @throws \App\Exceptions\ApiDataException
+     */
+    public function getFullData(int $page = 1): LengthAwarePaginator
+    {
+        /** @var LengthAwarePaginator $articles */
+        $categories = Category::with( 'articles')->paginate(self::PER_PAGE,['*'], 'page', $page);
+
+        if($categories ->isEmpty())
+        {
+            throw CategoryException::noData();
+        }
+
+        return $categories;
+
+    }
+
+    /**
+     * @param int $categoryId
+     * @return Category
+     */
+    public function getById(int $categoryId = 1): Category
+    {
+        //dd($categoryId);
+        return  Category::findOrFail($categoryId);
     }
 }

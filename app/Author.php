@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App;
 
+use App\Article;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -32,4 +33,14 @@ class Author extends Model
         'first_name',
         'last_name',
     ];
+
+    /**
+     * @return BelongsToMany
+     */
+    public function articles(): \App\BelongsToMany
+    {
+        return $this->belongsTo(Article::class, 'article_id','id');
+    }
+
+
 }

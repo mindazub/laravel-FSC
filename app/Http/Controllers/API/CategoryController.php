@@ -75,16 +75,53 @@ class CategoryController extends Controller
 
     /**
      * @param Request $request
+     * @return JsonResponse
+     * @throws ApiDataException
+     */
+    public function getFullData(Request $request): JsonResponse
+    {
+        try{
+
+            $categories = $this->categoryService->getFullData((int)$request->page);
+
+            return response()->json([
+                'success' => true,
+                'data' => $categories,
+            ]);
+
+        } catch (CategoryException $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+                'code' => $exception->getCode(),
+            ], JsonResponse::HTTP_NOT_FOUND);
+        } catch (Throwable $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something wrong ...',
+                'code' => $exception->getCode(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
+
+    /**
+     * @param Request $request
      * @param int $id
      * @return JsonResponse
      */
     public function getById(Request $request, int $id): JsonResponse
     {
 
+//dd($id);
 
         try {
 
             $category = $this->categoryService->getById($id);
+
+//            dd($category);
 
             return response()->json([
                 'success' => true,
@@ -114,8 +151,6 @@ class CategoryController extends Controller
                 'code' => $exception->getCode(),
             ]);
         }
-
-
 
     }
 }

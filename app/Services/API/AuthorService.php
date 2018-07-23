@@ -40,6 +40,28 @@ class AuthorService extends ApiService
         return $authors;
     }
 
+
+    public function getFullData(int $page = 1): LengthAwarePaginator
+    {
+        /** @var LengthAwarePaginator $articles */
+        $authors = Author::with( 'articles')->paginate(self::PER_PAGE,['*'], 'page', $page);
+
+        if($authors ->isEmpty())
+        {
+            throw AuthorException::noData();
+        }
+
+        return $categories;
+
+    }
+
+
+
+
+
+
+
+
     /**
      * @param int $authorid
      * @return Author

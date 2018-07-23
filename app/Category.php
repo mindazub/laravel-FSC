@@ -18,7 +18,11 @@ declare(strict_types = 1);
 
 namespace App;
 
+use App\Article;
+
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Class Category
@@ -45,4 +49,12 @@ class Category extends Model
         'title',
         'slug',
     ];
+
+    /**
+     * @return BelongsToMany
+     */
+    public function articles(): BelongsToMany
+    {
+        return $this->belongsToMany(Article::class);
+    }
 }

@@ -27,7 +27,7 @@ Route::group(['prefix' => 'articles'], function(){
 Route::group(['prefix' => 'categories'], function(){
     Route::get('/', 'API\\CategoryController@getPaginate');
     Route::get('one/{category}', 'API\\CategoryController@getById');
-
+    Route::get('full', 'API\\CategoryController@getFullData');
 });
 
 
@@ -36,4 +36,5 @@ Route::group(
     Route::get('/', 'API\\AuthorController@getPaginate');
     // full reiktu pasidaryti
     Route::get('one/{author}', 'API\\AuthorController@getById');
+    Route::get('full', 'API\\AuthorController@getFullData');
 });

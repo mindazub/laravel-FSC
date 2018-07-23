@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API;
 
-use App\Exceptions\ApiDataException;
 use App\Exceptions\AuthorException;
 use App\Services\API\AuthorService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -65,6 +64,31 @@ class AuthorController extends Controller
     }
 
 
+    public function getFullData(Request $request): JsonResponse
+    {
+        try{
+
+            $authors = $this->authorService->getFullData((int)$request->page);
+
+            return response()->json([
+                'success' => true,
+                'data' => $authors,
+            ]);
+
+        } catch (AuthorException $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+                'code' => $exception->getCode(),
+            ], JsonResponse::HTTP_NOT_FOUND);
+        } catch (Throwable $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something wrong ...',
+                'code' => $exception->getCode(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
 
