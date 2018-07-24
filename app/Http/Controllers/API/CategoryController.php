@@ -37,22 +37,22 @@ class CategoryController extends Controller
     public function getPaginate(Request $request): JsonResponse
     {
 
-        try{
+        try {
 
             $categories = $this->categoryService->getPaginateData((int)$request->page);
             return response()->json([
-                'data'=> $categories->getCollection(),
-                'status'=>true,
-                'current_page'=>$categories->currentPage(),
-                'total_page'=>$categories->lastPage()
+                'data' => $categories->getCollection(),
+                'status' => true,
+                'current_page' => $categories->currentPage(),
+                'total_page' => $categories->lastPage()
             ]);
-        }catch (CategoryException $exception) {
+        } catch (CategoryException $exception) {
 
             logger($exception->getMessage(), [
                     'trace' => $exception->getTrace(),
-                    'message'=>$exception->getMessage(),
+                    'message' => $exception->getMessage(),
                     'code' => $exception->getCode(),
-                    'page'=> $request->page,
+                    'page' => $request->page,
                     'url' => $request->url()
                 ]
             );
@@ -62,11 +62,10 @@ class CategoryController extends Controller
                 'message' => $exception->getMessage(),
                 'code' => $exception->getCode(),
             ], JsonResponse::HTTP_NOT_FOUND);
-        }catch(Throwable $exception)
-        {
+        } catch (Throwable $exception) {
             return response()->json([
-                'status'=> false,
-                'message'=> 'Something wrong',
+                'status' => false,
+                'message' => 'Something wrong',
                 'code' => JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -82,7 +81,7 @@ class CategoryController extends Controller
      */
     public function getFullData(Request $request): JsonResponse
     {
-        try{
+        try {
 
             $categories = $this->categoryService->getFullData((int)$request->page);
 
@@ -105,8 +104,6 @@ class CategoryController extends Controller
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
-
 
 
     /**
@@ -132,37 +129,30 @@ class CategoryController extends Controller
 //            ]);
 
 
-
-
-
-
-
             return $category;
 
-        } catch (ModelNotFoundException $exception)
-        {
+        } catch (ModelNotFoundException $exception) {
             logger([
                 $exception->getMessage(),
-                'code'=>$exception->getCode(),
+                'code' => $exception->getCode(),
                 'author-id' => $id,
                 'path' => $request->path(),
                 'url' => $request->url(),
             ]);
             return response()->json([
                 'success' => false,
-                'code' =>  $exception->getCode(),
+                'code' => $exception->getCode(),
                 'message' => 'No data found',
             ], JsonResponse::HTTP_NOT_FOUND);
-        } catch (\Throwable $exception)
-        {
+        } catch (\Throwable $exception) {
 
 //            dd($exception->getMessage());
 
             return response()->json([
 
 
-                'success' =>false,
-                'message' =>'Something wrong',
+                'success' => false,
+                'message' => 'Something wrong',
                 'code' => $exception->getCode(),
             ]);
         }

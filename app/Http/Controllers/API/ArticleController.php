@@ -1,9 +1,10 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 
 namespace App\Http\Controllers\API;
+
 use App\Article;
 use App\Exceptions\ApiDataException;
 use App\Exceptions\ArticleException;
@@ -13,8 +14,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
-
 
 
 /**
@@ -36,38 +35,37 @@ class ArticleController extends Controller
     public function getPaginate(Request $request): JsonResponse
     {
 
-        try{
+        try {
 
             $articles = $this->articleService->getPaginateData((int)$request->page);
             return response()->json([
-                'data'=> $articles->getCollection(),
-                'status'=>true,
-                'current_page'=>$articles->currentPage(),
-                'total_page'=>$articles->lastPage()
+                'data' => $articles->getCollection(),
+                'status' => true,
+                'current_page' => $articles->currentPage(),
+                'total_page' => $articles->lastPage()
             ]);
-        }catch (ArticleException $exception) {
+        } catch (ArticleException $exception) {
 
             logger($exception->getMessage(), [
-                'trace' => $exception->getTrace(),
-                    'message'=>$exception->getMessage(),
+                    'trace' => $exception->getTrace(),
+                    'message' => $exception->getMessage(),
                     'code' => $exception->getCode(),
-                    'page'=> $request->page,
+                    'page' => $request->page,
                     'url' => $request->url()
-            ]
-        );
+                ]
+            );
 
             return response()->json([
                 'status' => false,
-            'message' => $exception->getMessage(),
-            'code' => $exception->getCode(),
-], JsonResponse::HTTP_NOT_FOUND);
-        }catch(Throwable $exception)
-        {
+                'message' => $exception->getMessage(),
+                'code' => $exception->getCode(),
+            ], JsonResponse::HTTP_NOT_FOUND);
+        } catch (Throwable $exception) {
             return response()->json([
-            'status'=> false,
-            'message'=> 'Something wrong',
-            'code' => JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-        ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+                'status' => false,
+                'message' => 'Something wrong',
+                'code' => JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
 
 
@@ -80,7 +78,7 @@ class ArticleController extends Controller
      */
     public function getFullData(Request $request): JsonResponse
     {
-        try{
+        try {
 
             $articles = $this->articleService->getFullData((int)$request->page);
 
@@ -94,7 +92,7 @@ class ArticleController extends Controller
                 'success' => false,
                 'message' => $exception->getMessage(),
                 'code' => $exception->getCode(),
-             ], JsonResponse::HTTP_NOT_FOUND);
+            ], JsonResponse::HTTP_NOT_FOUND);
         } catch (Throwable $exception) {
 
 
@@ -129,31 +127,28 @@ class ArticleController extends Controller
 
             ]);
 
-        } catch (ModelNotFoundException $exception)
-        {
+        } catch (ModelNotFoundException $exception) {
             logger([
                 $exception->getMessage(),
-                'code'=>$exception->getCode(),
+                'code' => $exception->getCode(),
                 'author-id' => $request->id,
                 'path' => $request->path(),
                 'url' => $request->url(),
             ]);
             return response()->json([
                 'success' => false,
-                'code' =>  $exception->getCode(),
+                'code' => $exception->getCode(),
                 'message' => 'No data found',
             ], JsonResponse::HTTP_NOT_FOUND);
-        } catch (\Throwable $exception)
-        {
+        } catch (\Throwable $exception) {
 //            dd($exception->getMessage());
 
             return response()->json([
-                'success' =>false,
-                'message' =>'Something wrong',
+                'success' => false,
+                'message' => 'Something wrong',
                 'code' => $exception->getCode(),
             ]);
         }
-
 
 
     }

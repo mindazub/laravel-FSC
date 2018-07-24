@@ -52,6 +52,8 @@ class AuthorService extends ApiService
         /** @var LengthAwarePaginator $articles */
         $authors = Author::with( 'articles')->paginate(self::PER_PAGE,['*'], 'page', $page);
 
+//        dd($authors);
+
         if($authors ->isEmpty())
         {
             throw AuthorException::noData();

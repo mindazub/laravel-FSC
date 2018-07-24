@@ -53,7 +53,7 @@ class Category extends Model
     /**
      * @return BelongsToMany
      */
-    public function articles(): BelongsToMany
+    public function articles(): belongsToMany
     {
         return $this->belongsToMany(Article::class);
     }

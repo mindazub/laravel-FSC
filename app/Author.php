@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App;
 
@@ -8,6 +8,9 @@ use App\Article;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Author
@@ -35,11 +38,11 @@ class Author extends Model
     ];
 
     /**
-     * @return BelongsToMany
+     * @return HasMany
      */
-    public function articles(): \App\BelongsToMany
+    public function articles(): hasMany
     {
-        return $this->belongsTo(Article::class, 'article_id','id');
+        return $this->hasMany(Article::class);
     }
 
 
