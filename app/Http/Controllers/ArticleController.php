@@ -31,7 +31,7 @@ class ArticleController extends Controller
         /**
          * @vat LengthAwarePaginator $articles
          */
-        $articles = Article::paginate(2);
+        $articles = Article::paginate(5);
 
 
 //        dd($articles);

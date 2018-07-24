@@ -32,17 +32,24 @@ class ArticleController extends Controller
         $this->articleService = $articleService;
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * @throws ApiDataException
+     */
     public function getPaginate(Request $request): JsonResponse
     {
 
         try {
 
-            $articles = $this->articleService->getPaginateData((int)$request->page);
+            $articles = $this->articleService->getPaginateData();
             return response()->json([
-                'data' => $articles->getCollection(),
+//                'data' => $articles->getCollection(),
                 'status' => true,
-                'current_page' => $articles->currentPage(),
-                'total_page' => $articles->lastPage()
+                'data' => $articles,
+
+//                'current_page' => $articles->currentPage(),
+//                'total_page' => $articles->lastPage()
             ]);
         } catch (ArticleException $exception) {
 
@@ -63,7 +70,7 @@ class ArticleController extends Controller
         } catch (Throwable $exception) {
             return response()->json([
                 'status' => false,
-                'message' => 'Something wrong',
+                'message' => $exception->getMessage(),
                 'code' => JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -116,7 +123,7 @@ class ArticleController extends Controller
 
         try {
 
-            $article = $this->articleService->getById((int)$request->article);
+            $article = $this->articleService->getByIdForApi((int)$request->article);
 
 //            dd($article);
 
@@ -145,9 +152,9 @@ class ArticleController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Something wrong',
+                'message' => $exception->getMessage(),
                 'code' => $exception->getCode(),
-            ]);
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
 
 
