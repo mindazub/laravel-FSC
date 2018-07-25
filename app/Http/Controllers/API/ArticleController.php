@@ -43,6 +43,8 @@ class ArticleController extends Controller
         try {
 
             $articles = $this->articleService->getPaginateData();
+
+
             return response()->json([
 //                'data' => $articles->getCollection(),
                 'status' => true,
@@ -80,18 +82,50 @@ class ArticleController extends Controller
 
     /**
      * @param Request $request
+     * @param int $articleId
      * @return JsonResponse
-     * @throws ApiDataException
      */
-    public function getFullData(Request $request): JsonResponse
+    public function getByIdFull(Request $request, int $articleId): JsonResponse
     {
         try {
 
-            $articles = $this->articleService->getFullData((int)$request->page);
+            $articleFull = $this->articleService->getByIdFull($articleId);
+//dd($articleFull);
+
+                return response()->json([
+                    'success' => true,
+                    'data' => $articleFull,
+                ]);
+
+
+        } catch (\Throwable $exception) {
+
+            return response()->json([
+                'success' => false,
+                'message'=> $exception->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
+    /**
+     * @param Request $request
+     * @param int $id
+     * @return JsonResponse
+     * @throws ApiDataException
+     */
+    public function getFullData(Request $request, int $id): JsonResponse
+    {
+        try {
+
+            $article = $this->articleService->getFullData((int)$request->article);
+
+//            dd($article);
 
             return response()->json([
                 'success' => true,
-                'data' => $articles,
+                'data' => $article,
             ]);
 
         } catch (ModelNotFoundException $exception) {
@@ -117,13 +151,13 @@ class ArticleController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function getById(Request $request): JsonResponse
+    public function getById(int $articleId): JsonResponse
     {
 
 
         try {
 
-            $article = $this->articleService->getByIdForApi((int)$request->article);
+            $article = $this->articleService->getByIdForApi($articleId);
 
 //            dd($article);
 

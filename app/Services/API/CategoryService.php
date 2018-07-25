@@ -14,6 +14,7 @@ namespace App\Services\API;
 use App\Category;
 use App\DTO\CategoriesDTO;
 use App\DTO\CategoryDTO;
+use App\DTO\PaginatorDTO;
 use App\Exceptions\CategoryException;
 use App\Services\ApiService;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -32,12 +33,10 @@ class CategoryService extends ApiService
      * @return PaginatorDTO
      * @throws \App\Exceptions\ApiDataException
      */
-    public function getPaginateData(int $page = 1): CategoriesDTO
+    public function getPaginateData(int $page = 1): PaginatorDTO
     {
         /** @var LengthAwarePaginator $authors */
         $categories = Category::paginate(self::PER_PAGE);
-
-//        dd($categories);
 
         if ($categories->isEmpty()) {
             throw CategoryException::noData();
@@ -58,16 +57,16 @@ class CategoryService extends ApiService
 
 //        dd($categoriesDTO);
 //        dd($categories);
-//        return new PaginatorDTO(
-//            $categories->currentPage(),
-//            collect($categoriesDTO)->get('data'),
-//            $categories->lastPage(),
-//            $categories->total(),
-//            $categories->perPage(),
-//            $categories->nextPageUrl(),
-//            $categories->previousPageUrl()
-//            );
-        return $categoriesDTO;
+        return new PaginatorDTO(
+            $categories->currentPage(),
+            collect($categoriesDTO)->get('data'),
+            $categories->lastPage(),
+            $categories->total(),
+            $categories->perPage(),
+            $categories->nextPageUrl(),
+            $categories->previousPageUrl()
+            );
+//        return $categoriesDTO;
     }
 
     /**

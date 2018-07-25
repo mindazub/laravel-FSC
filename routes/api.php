@@ -19,7 +19,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['prefix' => 'articles'], function(){
     Route::get('/', 'API\\ArticleController@getPaginate');
-    Route::get('one/{article}', 'API\\ArticleController@getById');
+    Route::get('one/{articleId}', 'API\\ArticleController@getById');
+    Route::get('one/{articleId}/full', 'API\\ArticleController@getByIdFull');
     Route::get('full', 'API\\ArticleController@getFullData');
 });
 

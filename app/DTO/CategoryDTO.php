@@ -64,7 +64,7 @@ class CategoryDTO extends BaseDTO
     }
 
     /**
-     * @return string
+     * @return CategoryDTO
      */
     public function getTitle(): string
     {

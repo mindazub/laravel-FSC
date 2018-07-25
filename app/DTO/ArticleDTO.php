@@ -3,12 +3,13 @@
 
 namespace App\DTO;
 
+use App\DTO\Interfaces\ArticleDTOInterface;
 
 /**
  * Class ArticleDTO
  * @package App\DTO
  */
-class ArticleDTO extends BaseDTO
+class ArticleDTO extends BaseDTO implements ArticleDTOInterface
 {
     /**
      * @var

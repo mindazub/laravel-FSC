@@ -6,6 +6,7 @@ use App\Exceptions\ApiDataException;
 use App\Exceptions\CategoryException;
 use App\Services\API\CategoryService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -115,31 +116,31 @@ class CategoryController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function getById(Request $request, int $id)
+    public function getById(Request $request): JsonResponse
     {
 
-//dd($id);
+//dd((int)$request->category);
 
         try {
 
-            $category = $this->categoryService->getById($id);
+            $category = $this->categoryService->getById((int)$request->category);
 
 //            dd($category);
 
-//            return response()->json([
-//                'success' => true,
-//                'data' => $category,
-//
-//            ]);
+            return response()->json([
+                'success' => true,
+                'data' => $category,
+
+            ]);
 
 
-            return $category;
+//            return $category;
 
         } catch (ModelNotFoundException $exception) {
             logger([
                 $exception->getMessage(),
                 'code' => $exception->getCode(),
-                'author-id' => $id,
+                'categoryId' => $categoryId,
                 'path' => $request->path(),
                 'url' => $request->url(),
             ]);
@@ -150,7 +151,7 @@ class CategoryController extends Controller
             ], JsonResponse::HTTP_NOT_FOUND);
         } catch (\Throwable $exception) {
 
-//            dd($exception->getMessage());
+            dd($exception->getMessage());
 
             return response()->json([
 
