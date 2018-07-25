@@ -24,6 +24,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
  */
 class AuthorService extends ApiService
 {
+
+    const PER_PAGE = 3  ;
+
     /**
      * @param int $page
      * @return LengthAwarePaginator
@@ -32,7 +35,7 @@ class AuthorService extends ApiService
     public function getPaginateData(int $page = 1): LengthAwarePaginator
     {
         /** @var LengthAwarePaginator $authors */
-        $authors = Author::paginate(self::PER_PAGE, ['*'], 'page', $page);
+        $authors = Author::paginate(self::PER_PAGE);
 
         if ($authors->isEmpty()) {
             throw AuthorException::noData();

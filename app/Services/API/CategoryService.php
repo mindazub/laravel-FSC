@@ -12,6 +12,7 @@ declare(strict_types = 1);
 namespace App\Services\API;
 
 use App\Category;
+use App\DTO\CategoriesDTO;
 use App\DTO\CategoryDTO;
 use App\Exceptions\CategoryException;
 use App\Services\ApiService;
@@ -23,21 +24,50 @@ use Illuminate\Pagination\LengthAwarePaginator;
  */
 class CategoryService extends ApiService
 {
+
+    const PER_PAGE = 3;
+
     /**
      * @param int $page
-     * @return LengthAwarePaginator
+     * @return PaginatorDTO
      * @throws \App\Exceptions\ApiDataException
      */
-    public function getPaginateData(int $page = 1): LengthAwarePaginator
+    public function getPaginateData(int $page = 1): CategoriesDTO
     {
         /** @var LengthAwarePaginator $authors */
-        $categories = Category::paginate(self::PER_PAGE, ['*'], 'page', $page);
+        $categories = Category::paginate(self::PER_PAGE);
+
+//        dd($categories);
 
         if ($categories->isEmpty()) {
             throw CategoryException::noData();
         }
 
-        return $categories;
+        $categoriesDTO = new CategoriesDTO();
+
+
+        foreach ($categories as $category)
+        {
+            $categoriesDTO->setCategory(
+                (new CategoryDTO())
+                        ->setCategoryId($category->id)
+                        ->setTitle($category->title)
+                        ->setSlug($category->slug)
+                );
+        }
+
+//        dd($categoriesDTO);
+//        dd($categories);
+//        return new PaginatorDTO(
+//            $categories->currentPage(),
+//            collect($categoriesDTO)->get('data'),
+//            $categories->lastPage(),
+//            $categories->total(),
+//            $categories->perPage(),
+//            $categories->nextPageUrl(),
+//            $categories->previousPageUrl()
+//            );
+        return $categoriesDTO;
     }
 
     /**
@@ -61,7 +91,7 @@ class CategoryService extends ApiService
 
     /**
      * @param int $categoryId
-     * @return Category
+     * @return CategoryDTO
      */
     public function getById(int $categoryId = 1): CategoryDTO
     {

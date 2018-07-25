@@ -31,8 +31,7 @@ Route::group(['prefix' => 'categories'], function(){
 });
 
 
-Route::group(
-    ['prefix' => 'authors'], function (){
+Route::group(['prefix' => 'authors'], function (){
     Route::get('/', 'API\\AuthorController@getPaginate');
     // full reiktu pasidaryti
     Route::get('one/{author}', 'API\\AuthorController@getById');

@@ -10,8 +10,6 @@ namespace App\DTO;
  */
 class ArticleDTO extends BaseDTO
 {
-
-
     /**
      * @var
      */
@@ -21,10 +19,6 @@ class ArticleDTO extends BaseDTO
      * @var
      */
     private $title;
-
-
-
-
     /**
      * @return mixed
      */
@@ -32,7 +26,6 @@ class ArticleDTO extends BaseDTO
     {
         return $this->articleId;
     }
-
     /**
      * @param mixed $articleId
      * @return ArticleDTO
@@ -42,7 +35,6 @@ class ArticleDTO extends BaseDTO
         $this->articleId = $articleId;
         return $this;
     }
-
     /**
      * @return mixed
      */
@@ -50,7 +42,6 @@ class ArticleDTO extends BaseDTO
     {
         return $this->title;
     }
-
     /**
      * @param mixed $title
      * @return ArticleDTO
@@ -60,7 +51,6 @@ class ArticleDTO extends BaseDTO
         $this->title = $title;
         return $this;
     }
-
     /**
      * @return mixed
      */
@@ -68,7 +58,6 @@ class ArticleDTO extends BaseDTO
     {
         return $this->description;
     }
-
     /**
      * @param mixed $description
      * @return ArticleDTO
@@ -78,7 +67,6 @@ class ArticleDTO extends BaseDTO
         $this->description = $description;
         return $this;
     }
-
     /**
      * @return mixed
      */
@@ -86,7 +74,6 @@ class ArticleDTO extends BaseDTO
     {
         return $this->slug;
     }
-
     /**
      * @param mixed $slug
      * @return ArticleDTO
@@ -96,8 +83,6 @@ class ArticleDTO extends BaseDTO
         $this->slug = $slug;
         return $this;
     }
-
-
     /**
      * @var
      */

@@ -58,7 +58,6 @@ class ArticleService extends ApiService
             $articles->currentPage(),
             collect($articlesDTO)->get('data'),
             $articles->lastPage(),
-
             $articles->total(),
             $articles->perPage(),
             $articles->nextPageUrl(),
@@ -80,6 +79,8 @@ class ArticleService extends ApiService
         {
             throw ArticleException::noData();
         }
+
+
 
         return $articles;
 

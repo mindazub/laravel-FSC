@@ -32,6 +32,8 @@ class CreateCategoriesTable extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('categories');
+
         Schema::create('categories', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();

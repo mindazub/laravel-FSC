@@ -27,7 +27,6 @@ class AuthorController extends Controller
     {
 
         try {
-
             $authors = $this->authorService->getPaginateData((int)$request->page);
             return response()->json([
                 'data' => $authors->getCollection(),
@@ -91,27 +90,29 @@ class AuthorController extends Controller
 
 
     /**
-     *
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function getById(Request $request, int $id)
+    public function getById(Request $request): JsonResponse
     {
 
 
         try {
 
-            $author = $this->authorService->getById($id);
+            $author = $this->authorService->getById((int)$request->author);
+//            dd($author);
 
 //              viskas per DTO padarome
 //
-//            return response()->json([
-//                'success' => true,
-//                'data' => $author,
-//
-//            ]);
+            return response()->json([
+                'success' => true,
+                'data' => $author,
+
+            ]);
 
 //            dd($author);
 
-            return $author;
+//            return $author;
 
 
         } catch (ModelNotFoundException $exception) {

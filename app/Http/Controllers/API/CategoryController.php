@@ -32,19 +32,23 @@ class CategoryController extends Controller
     /**
      * @param Request $request
      * @return JsonResponse
-     * @throws ApiDataException
      */
     public function getPaginate(Request $request): JsonResponse
     {
 
         try {
 
-            $categories = $this->categoryService->getPaginateData((int)$request->page);
+            $categories = $this->categoryService->getPaginateData();
+
+//            dd($categories);
+
             return response()->json([
-                'data' => $categories->getCollection(),
+//                'data' => $categories->getCollection(),
                 'status' => true,
-                'current_page' => $categories->currentPage(),
-                'total_page' => $categories->lastPage()
+                'data' => $categories,
+
+//                'current_page' => $categories->currentPage(),
+//                'total_page' => $categories->lastPage()
             ]);
         } catch (CategoryException $exception) {
 
@@ -65,7 +69,7 @@ class CategoryController extends Controller
         } catch (Throwable $exception) {
             return response()->json([
                 'status' => false,
-                'message' => 'Something wrong',
+                'message' => 'Something wrong...',
                 'code' => JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
             ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
