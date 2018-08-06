@@ -22,7 +22,7 @@ class AuthorController extends Controller
      */
     public function index(): View
     {
-        $authors = Author::paginate(3);
+        $authors = Author::paginate();
 
         return view('author.list', compact('authors'));
     }
