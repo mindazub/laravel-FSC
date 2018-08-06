@@ -18,6 +18,14 @@
                             </div>
                         @endif
 
+                        @if (session('error'))
+
+                            <div class="alert alert-danger" role="alert">
+                                {{ session('error') }}
+                            </div>
+
+                            @endif
+
                         <table class="table">
                             <tr>
                                 <th>ID</th>

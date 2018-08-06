@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
@@ -9,6 +9,9 @@ use App\Author;
 use App\Category;
 use App\Http\Requests\ArticleStoreRequest;
 use App\Http\Requests\ArticleUpdateRequest;
+use App\Repositories\ArticleRepository;
+use App\Repositories\AuthorRepository;
+use App\Repositories\CategoryRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
@@ -16,9 +19,29 @@ use Illuminate\View\View;
 
 class ArticleController extends Controller
 {
-    public function __construct()
+    /**
+     * @var ArticleRepository
+     */
+    private $articleRepository;
+    /**
+     * @var CategoryRepository
+     */
+    private $categoryRepository;
+    /**
+     * @var AuthorRepository
+     */
+    private $authorRepository;
+
+    public function __construct(
+        ArticleRepository $articleRepository,
+        CategoryRepository $categoryRepository,
+        AuthorRepository $authorRepository
+    )
     {
         $this->middleware('auth');
+        $this->articleRepository = $articleRepository;
+        $this->categoryRepository = $categoryRepository;
+        $this->authorRepository = $authorRepository;
     }
 
     /**
@@ -42,10 +65,12 @@ class ArticleController extends Controller
     public function create(): View
     {
         /** @var Collection $categories */
-        $categories = Category::all();
+//        $categories = Category::all();
+        $categories = $this->categoryRepository->all();
 
         /** @var Collection $authors */
-        $authors = Author::all();
+//        $authors = Author::all();
+        $authors = $this->authorsRepository->all();
 
         return view('article.create', compact('authors', 'categories'));
     }
@@ -65,7 +90,8 @@ class ArticleController extends Controller
             'slug' => $request->getSlug(),
         ];
 
-        $article = Article::create($data);
+//        $article = Article::create($data);
+        $article = $this->articleRepository->create($data);
 
         $article->categories()->attach($request->getCategoriesIds());
 
@@ -80,8 +106,12 @@ class ArticleController extends Controller
      * @param  \App\Article $article
      * @return View
      */
-    public function show(Article $article): View
+//    public function show(Article $article): View
+    public function show(int $articleId): View
     {
+
+        $article = $this->articleRepository->find($articleId);
+
         return view('article.view', compact('article'));
     }
 
@@ -93,8 +123,8 @@ class ArticleController extends Controller
      */
     public function edit(Article $article): View
     {
-        $authors = Author::all();
-        $categories = Category::all();
+        $authors = $this->authorRepository->all();
+        $categories = $this->categoryRepository->all();
 
         return view('article.edit', compact('article', 'authors', 'categories'));
     }
@@ -103,19 +133,26 @@ class ArticleController extends Controller
      * Update the specified resource in storage.
      *
      * @param ArticleUpdateRequest $request
-     * @param  \App\Article $article
+     * @param int $articleId
      * @return RedirectResponse
+     * @throws \Exception
      */
-    public function update(ArticleUpdateRequest $request, Article $article): RedirectResponse
+    public function update(ArticleUpdateRequest $request, int $articleId): RedirectResponse
     {
-        $article->title = $request->getTitle();
-        $article->description = $request->getDescription();
-        $article->author_id = $request->getAuthorId();
-        $article->slug = $request->getSlug();
+
+        $this->articleRepository->update([
+            'title' => $request->getTitle(),
+            'description' => $request->getDescription(),
+            'author_id' => $request->getAuthorId(),
+            'slug' => $request->getSlug(),
+
+        ], $articleId);
+
+        /** @var Article $article */
+        $article = $this->articleRepository->find($articleId);
 
         $article->categories()->sync($request->getCategoriesIds());
 
-        $article->save();
 
         return redirect()
             ->route('article.index')
@@ -125,16 +162,24 @@ class ArticleController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Article $article
+     * @param int $articleId
      * @return RedirectResponse
-     * @throws \Exception
      */
-    public function destroy(Article $article): RedirectResponse
+    public function destroy(int $articleId): RedirectResponse
     {
-        $article->delete();
 
-        return redirect()
-            ->route('article.index')
-            ->with('status', 'Article delete successfully!');
+
+        try {
+            $this->articleRepository->delete(['id' => $articleId]);
+            return redirect()
+                ->route('article.index')
+                ->with('status', 'Article delete successfully!');
+
+        } catch (\Throwable $exception) {
+            return redirect()
+                ->route('article.index')
+                ->with('status', $exception->getMessage());
+        }
+
     }
 }
