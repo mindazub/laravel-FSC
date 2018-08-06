@@ -16,26 +16,28 @@
 
 declare(strict_types = 1);
 
-namespace App\Exceptions;
+namespace App\Services\ClientAPI;
 
-use Exception;
+use App\Author;
 
 /**
- * Class ApiDataException
- * @package App\Exceptions
+ * Class ClientAuthorService
+ * @package App\Services\ClientAPI
  */
-class ApiDataException extends Exception
+class ClientAuthorService
 {
     /**
-     *
+     * @param \stdClass $data
+     * @return Author
      */
-    const NO_DATA_FOUND = 1001;
-
-    /**
-     * @return ApiDataException
-     */
-    public static function noData(): ApiDataException
+    public function saveAuthorFromObject(\stdClass $data): Author
     {
-        return new static('No data found', self::NO_DATA_FOUND);
+        return Author::updateOrCreate(
+            [
+                'first_name' => $data->first_name,
+                'last_name' => $data->last_name,
+            ],
+            ['reference_author_id' => $data->author_id]
+        );
     }
 }

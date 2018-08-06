@@ -44,9 +44,9 @@
                             @endforeach
 
                         </table>
-                <div style="display: flex; justify-conten:center;">
-                    {{ $articles->links() }}
-                </div>
+
+                        {{ $articles->links() }}
+
                     </div>
                 </div>
             </div>

@@ -8,6 +8,7 @@ use App\Article;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 /**
  * Class ArticleStoreRequest
@@ -39,8 +40,8 @@ class ArticleStoreRequest extends FormRequest
             'category' => [
                 'nullable',
                 'array',
-                'exists:categories,id'
-            ]
+                'exists:categories,id',
+            ],
         ];
     }
 
@@ -115,6 +116,9 @@ class ArticleStoreRequest extends FormRequest
         return $this->input('title');
     }
 
+    /**
+     * @return array
+     */
     public function getCategoriesIds(): array
     {
         return $this->input('category', []);

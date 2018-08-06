@@ -9,6 +9,7 @@ use App\Author;
 use App\Category;
 use App\Http\Requests\ArticleStoreRequest;
 use App\Http\Requests\ArticleUpdateRequest;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
@@ -27,14 +28,8 @@ class ArticleController extends Controller
      */
     public function index(): View
     {
-        /** @var  $articles */
-        /**
-         * @vat LengthAwarePaginator $articles
-         */
-        $articles = Article::paginate(5);
-
-
-//        dd($articles);
+        /** @var LengthAwarePaginator $articles */
+        $articles = Article::paginate();
 
         return view('article.list', compact('articles'));
     }
@@ -46,9 +41,9 @@ class ArticleController extends Controller
      */
     public function create(): View
     {
-
         /** @var Collection $categories */
         $categories = Category::all();
+
         /** @var Collection $authors */
         $authors = Author::all();
 
@@ -71,9 +66,8 @@ class ArticleController extends Controller
         ];
 
         $article = Article::create($data);
-        // galima ir su sync()
-        $article->categories()->attach($request->getCategoriesIds());
 
+        $article->categories()->attach($request->getCategoriesIds());
 
         return redirect()
             ->route('article.index')
@@ -88,8 +82,6 @@ class ArticleController extends Controller
      */
     public function show(Article $article): View
     {
-//        dd($article->categories());
-
         return view('article.view', compact('article'));
     }
 
@@ -101,7 +93,6 @@ class ArticleController extends Controller
      */
     public function edit(Article $article): View
     {
-
         $authors = Author::all();
         $categories = Category::all();
 
@@ -117,7 +108,6 @@ class ArticleController extends Controller
      */
     public function update(ArticleUpdateRequest $request, Article $article): RedirectResponse
     {
-
         $article->title = $request->getTitle();
         $article->description = $request->getDescription();
         $article->author_id = $request->getAuthorId();

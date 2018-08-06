@@ -20,11 +20,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Carbon|null $updated_at
  * @property string $first_name
  * @property string $last_name
+ * @property int|null $reference_author_id Author id from 3trd party application
  * @method static Builder|Author whereCreatedAt($value)
  * @method static Builder|Author whereFirstName($value)
  * @method static Builder|Author whereId($value)
  * @method static Builder|Author whereLastName($value)
  * @method static Builder|Author whereUpdatedAt($value)
+ * @method static Builder|Author whereReferenceAuthorId($value)
  * @mixin \Eloquent
  */
 class Author extends Model
@@ -35,6 +37,7 @@ class Author extends Model
     protected $fillable = [
         'first_name',
         'last_name',
+        'reference_author_id',
     ];
 
     /**

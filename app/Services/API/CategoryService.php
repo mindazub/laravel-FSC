@@ -1,11 +1,18 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: mindazub
- * Date: 2018.07.20
- * Time: 14:19
+ * @copyright C VR Solutions 2018
+ *
+ * This software is the property of VR Solutions
+ * and is protected by copyright law – it is NOT freeware.
+ *
+ * Any unauthorized use of this software without a valid license key
+ * is a violation of the license agreement and will be prosecuted by
+ * civil and criminal law.
+ *
+ * Contact VR Solutions:
+ * E-mail: vytautas.rimeikis@gmail.com
+ * http://www.vrwebdeveloper.lt
  */
-
 
 declare(strict_types = 1);
 
@@ -25,17 +32,14 @@ use Illuminate\Pagination\LengthAwarePaginator;
  */
 class CategoryService extends ApiService
 {
-
-    const PER_PAGE = 3;
-
     /**
-     * @param int $page
      * @return PaginatorDTO
      * @throws \App\Exceptions\ApiDataException
+     * @throws CategoryException
      */
-    public function getPaginateData(int $page = 1): PaginatorDTO
+    public function getPaginateDTOData(): PaginatorDTO
     {
-        /** @var LengthAwarePaginator $authors */
+        /** @var LengthAwarePaginator $categories */
         $categories = Category::paginate(self::PER_PAGE);
 
         if ($categories->isEmpty()) {
@@ -44,67 +48,34 @@ class CategoryService extends ApiService
 
         $categoriesDTO = new CategoriesDTO();
 
-
-        foreach ($categories as $category)
-        {
-            $categoriesDTO->setCategory(
-                (new CategoryDTO())
-                        ->setCategoryId($category->id)
-                        ->setTitle($category->title)
-                        ->setSlug($category->slug)
-                );
+        /** @var Category $category */
+        foreach ($categories as $category) {
+            $categoriesDTO->setCategoryData(
+                new CategoryDTO($category->id, $category->title, $category->slug)
+            );
         }
 
-//        dd($categoriesDTO);
-//        dd($categories);
-        return new PaginatorDTO(
+        $paginatorDTO = new PaginatorDTO(
             $categories->currentPage(),
             collect($categoriesDTO)->get('data'),
             $categories->lastPage(),
-            $categories->total(),
             $categories->perPage(),
+            $categories->total(),
             $categories->nextPageUrl(),
-            $categories->previousPageUrl()
-            );
-//        return $categoriesDTO;
-    }
+            $categories->previousPageUrl());
 
-    /**
-     * @param int $page
-     * @return LengthAwarePaginator
-     * @throws \App\Exceptions\ApiDataException
-     */
-    public function getFullData(int $page = 1): LengthAwarePaginator
-    {
-        /** @var LengthAwarePaginator $articles */
-        $categories = Category::with( 'articles')->paginate(self::PER_PAGE,['*'], 'page', $page);
-
-        if($categories ->isEmpty())
-        {
-            throw CategoryException::noData();
-        }
-
-        return $categories;
-
+        return $paginatorDTO;
     }
 
     /**
      * @param int $categoryId
      * @return CategoryDTO
      */
-    public function getById(int $categoryId = 1): CategoryDTO
+    public function getById(int $categoryId): CategoryDTO
     {
-        //dd($categoryId);
-
+        /** @var Category $category */
         $category = Category::findOrFail($categoryId);
 
-
-        $dto = new CategoryDTO();
-
-        return $dto->setCategoryId($category->id)
-        ->setTitle($category->title)
-        ->setSlug($category->slug);
-
-
+        return new CategoryDTO($category->id, $category->title, $category->slug);
     }
 }

@@ -1,6 +1,20 @@
 <?php
+/**
+ * @copyright C VR Solutions 2018
+ *
+ * This software is the property of VR Solutions
+ * and is protected by copyright law – it is NOT freeware.
+ *
+ * Any unauthorized use of this software without a valid license key
+ * is a violation of the license agreement and will be prosecuted by
+ * civil and criminal law.
+ *
+ * Contact VR Solutions:
+ * E-mail: vytautas.rimeikis@gmail.com
+ * http://www.vrwebdeveloper.lt
+ */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Http\Controllers\API;
 
@@ -12,132 +26,79 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-
+/**
+ * Class AuthorController
+ * @package App\Http\Controllers\API
+ */
 class AuthorController extends Controller
 {
+    /**
+     * @var AuthorService
+     */
     private $authorService;
 
+    /**
+     * AuthorController constructor.
+     * @param AuthorService $authorService
+     */
     public function __construct(AuthorService $authorService)
     {
-        return $this->authorService = $authorService;
+        $this->authorService = $authorService;
     }
-
-
-    public function getPaginate(Request $request): JsonResponse
-    {
-
-        try {
-            $authors = $this->authorService->getPaginateData((int)$request->page);
-            return response()->json([
-                'data' => $authors->getCollection(),
-                'status' => true,
-                'current_page' => $authors->currentPage(),
-                'total_page' => $authors->lastPage()
-            ]);
-        } catch (ModelNotFoundException $exception) {
-
-            logger($exception->getMessage(), [
-                    'trace' => $exception->getTrace(),
-                    'message' => $exception->getMessage(),
-                    'code' => $exception->getCode(),
-                    'page' => $request->page,
-                    'url' => $request->url()
-                ]
-            );
-
-            return response()->json([
-                'status' => false,
-                'message' => $exception->getMessage(),
-                'code' => $exception->getCode(),
-            ], JsonResponse::HTTP_NOT_FOUND);
-        } catch (Throwable $exception) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Something wrong',
-                'code' => JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
-
-    }
-
-
-    public function getFullData(Request $request): JsonResponse
-    {
-        try {
-
-            $authors = $this->authorService->getFullData((int)$request->page);
-
-            return response()->json([
-                'success' => true,
-                'data' => $authors,
-            ]);
-
-        } catch (ModelNotFoundException $exception) {
-            return response()->json([
-                'success' => false,
-                'message' => $exception->getMessage(),
-                'code' => $exception->getCode(),
-            ], JsonResponse::HTTP_NOT_FOUND);
-        } catch (Throwable $exception) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Something wrong ...',
-                'code' => $exception->getCode(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
 
     /**
-     * @param Request $request
      * @return JsonResponse
      */
-    public function getById(Request $request): JsonResponse
+    public function index(): JsonResponse
     {
-
-
         try {
+            $authors = $this->authorService->getPaginateData();
 
-            $author = $this->authorService->getById((int)$request->author);
-//            dd($author);
-
-//              viskas per DTO padarome
-//
             return response()->json([
-                'success' => true,
-                'data' => $author,
-
+                'status' => true,
+                'data' => $authors,
             ]);
+        } catch (AuthorException $exception) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => $exception->getMessage(),
+                    'code' => $exception->getCode(),
+                ],
+                JsonResponse::HTTP_NOT_FOUND
+            );
+        } catch (\Throwable $exception) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => 'Somethink wrong',
+                    'code' => JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 
-//            dd($author);
-
-//            return $author;
-
-
+    /**
+     * @param int $author Author ID
+     * @return AuthorDTO
+     */
+    public function show(int $author): AuthorDTO
+    {
+        try {
+            return $this->authorService->getById($author);
         } catch (ModelNotFoundException $exception) {
-            logger([
-                $exception->getMessage(),
-                'code' => $exception->getCode(),
-                'author-id' => $id,
-                'path' => $request->path(),
-                'url' => $request->url(),
-            ]);
             return response()->json([
                 'success' => false,
+                'message' => 'No data found.',
                 'code' => $exception->getCode(),
-                'message' => 'No data found',
             ], JsonResponse::HTTP_NOT_FOUND);
         } catch (\Throwable $exception) {
-//            dd($exception->getMessage());
-
             return response()->json([
                 'success' => false,
-                'message' => 'Something wrong',
+                'message' => 'Something wrong.',
                 'code' => $exception->getCode(),
-            ]);
+            ], JsonResponse::HTTP_NOT_FOUND);
         }
-
-
     }
 }

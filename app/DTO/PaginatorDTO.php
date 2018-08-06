@@ -1,15 +1,22 @@
 <?php
-declare(strict_types = 1);
 /**
+ * @copyright C VR Solutions 2018
  *
- * Created by PhpStorm.
- * User: mind
- * Date: 18.7.24
- * Time: 19.38
+ * This software is the property of VR Solutions
+ * and is protected by copyright law – it is NOT freeware.
+ *
+ * Any unauthorized use of this software without a valid license key
+ * is a violation of the license agreement and will be prosecuted by
+ * civil and criminal law.
+ *
+ * Contact VR Solutions:
+ * E-mail: vytautas.rimeikis@gmail.com
+ * http://www.vrwebdeveloper.lt
  */
 
-namespace App\DTO;
+declare(strict_types = 1);
 
+namespace App\DTO;
 
 use Illuminate\Support\Collection;
 
@@ -44,16 +51,6 @@ class PaginatorDTO extends BaseDTO
      */
     private $perPage;
 
-    /**
-     * PaginatorDTO constructor.
-     * @param int $currentPage
-     * @param Collection $data
-     * @param int $lastPage
-     * @param string $nextPageUrl
-     * @param string $prevPageUrl
-     * @param int $total
-     * @param int $perPage
-     */
     public function __construct(
         int $currentPage,
         Collection $data,
@@ -62,36 +59,29 @@ class PaginatorDTO extends BaseDTO
         int $perPage,
         string $nextPageUrl = null,
         string $prevPageUrl = null
-    )
-    {
-
+    ) {
         $this->currentPage = $currentPage;
         $this->data = $data;
         $this->lastPage = $lastPage;
-        $this->total = $total;
-        $this->perPage = $perPage;
         $this->nextPageUrl = $nextPageUrl;
         $this->prevPageUrl = $prevPageUrl;
+        $this->total = $total;
+        $this->perPage = $perPage;
     }
 
     /**
      * @return array
      */
-    protected
-/**
- * @return array
- */
-function jsonData(): array
+    protected function jsonData(): array
     {
         return [
-            'current_page' =>$this->currentPage,
-            'data' =>$this->data,
-            'last_page' =>$this->lastPage,
-
-            'total' =>$this->total,
-            'per_page'=>$this->perPage,
-            'next_page_url' =>$this->nextPageUrl,
-            'prev_page_url' =>$this->prevPageUrl,
+            'current_page' => $this->currentPage,
+            'data' => $this->data,
+            'last_page' => $this->lastPage,
+            'next_page_url' => $this->nextPageUrl,
+            'prev_page_url' => $this->prevPageUrl,
+            'total' => $this->total,
+            'per_page' => $this->perPage,
         ];
     }
 }

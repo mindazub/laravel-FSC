@@ -1,89 +1,50 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: mind
- * Date: 18.7.23
- * Time: 19.23
+ * @copyright C VR Solutions 2018
+ *
+ * This software is the property of VR Solutions
+ * and is protected by copyright law – it is NOT freeware.
+ *
+ * Any unauthorized use of this software without a valid license key
+ * is a violation of the license agreement and will be prosecuted by
+ * civil and criminal law.
+ *
+ * Contact VR Solutions:
+ * E-mail: vytautas.rimeikis@gmail.com
+ * http://www.vrwebdeveloper.lt
  */
+
+declare(strict_types = 1);
 
 namespace App\DTO;
 
-
 class CategoryDTO extends BaseDTO
-
 {
+    /**
+     * @var int
+     */
     private $categoryId;
-
     /**
      * @var string
      */
     private $title;
-
     /**
-     * @return mixed
+     * @var string
      */
-
     private $slug;
 
     /**
-     * @param mixed $slug
-     * @return CategoryDTO
+     * CategoryDTO constructor.
+     * @param int $categoryId
+     * @param string $title
+     * @param string $slug
      */
-    public function setSlug($slug): CategoryDTO
-    {
-        $this->slug = $slug;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSlug(): string
-    {
-        return $this->slug;
-    }
-
-
-    /**
-     * @return int
-     */
-    public function getCategoryId(): int
-    {
-        return $this->categoryId;
-    }
-
-    /**
-     * @param mixed $categoryId
-     * @return CategoryDTO
-     */
-    public function setCategoryId($categoryId): CategoryDTO
+    public function __construct(int $categoryId, string $title, string $slug)
     {
         $this->categoryId = $categoryId;
-
-        return $this;
-    }
-
-    /**
-     * @return CategoryDTO
-     */
-    public function getTitle(): string
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param mixed $title
-     * @return CategoryDTO
-     */
-    public function setTitle($title): CategoryDTO
-    {
         $this->title = $title;
-
-        return $this;
-
-
+        $this->slug = $slug;
     }
-
 
     /**
      * @return array
@@ -91,10 +52,9 @@ class CategoryDTO extends BaseDTO
     protected function jsonData(): array
     {
         return [
-            'categoryId' => $this->getCategoryId(),
-            'title' => $this->getTitle(),
-            'slug' => $this->getSlug(),
-
+            'category_id' => $this->categoryId,
+            'title' => $this->title,
+            'slug' => $this->slug,
         ];
     }
 }

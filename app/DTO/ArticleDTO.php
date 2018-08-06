@@ -1,5 +1,20 @@
 <?php
+/**
+ * @copyright C VR Solutions 2018
+ *
+ * This software is the property of VR Solutions
+ * and is protected by copyright law – it is NOT freeware.
+ *
+ * Any unauthorized use of this software without a valid license key
+ * is a violation of the license agreement and will be prosecuted by
+ * civil and criminal law.
+ *
+ * Contact VR Solutions:
+ * E-mail: vytautas.rimeikis@gmail.com
+ * http://www.vrwebdeveloper.lt
+ */
 
+declare(strict_types = 1);
 
 namespace App\DTO;
 
@@ -12,91 +27,30 @@ use App\DTO\Interfaces\ArticleDTOInterface;
 class ArticleDTO extends BaseDTO implements ArticleDTOInterface
 {
     /**
-     * @var
+     * @var int
      */
     private $articleId;
-
     /**
-     * @var
+     * @var string
      */
     private $title;
     /**
-     * @return mixed
-     */
-    public function getArticleId(): string
-    {
-        return $this->articleId;
-    }
-    /**
-     * @param mixed $articleId
-     * @return ArticleDTO
-     */
-    public function setArticleId($articleId): ArticleDTO
-    {
-        $this->articleId = $articleId;
-        return $this;
-    }
-    /**
-     * @return mixed
-     */
-    public function getTitle(): string
-    {
-        return $this->title;
-    }
-    /**
-     * @param mixed $title
-     * @return ArticleDTO
-     */
-    public function setTitle($title): ArticleDTO
-    {
-        $this->title = $title;
-        return $this;
-    }
-    /**
-     * @return mixed
-     */
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-    /**
-     * @param mixed $description
-     * @return ArticleDTO
-     */
-    public function setDescription($description): ArticleDTO
-    {
-        $this->description = $description;
-        return $this;
-    }
-    /**
-     * @return mixed
-     */
-    public function getSlug(): string
-    {
-        return $this->slug;
-    }
-    /**
-     * @param mixed $slug
-     * @return ArticleDTO
-     */
-    public function setSlug($slug): ArticleDTO
-    {
-        $this->slug = $slug;
-        return $this;
-    }
-    /**
-     * @var
+     * @var string
      */
     private $description;
 
     /**
-     * @var
+     * ArticleDTO constructor.
+     * @param int $articleId
+     * @param string $title
+     * @param string|null $description
      */
-    private $slug;
-
-
-
-
+    public function __construct(int $articleId, string $title, string $description = null)
+    {
+        $this->articleId = $articleId;
+        $this->title = $title;
+        $this->description = $description;
+    }
 
     /**
      * @return array
@@ -104,11 +58,9 @@ class ArticleDTO extends BaseDTO implements ArticleDTOInterface
     protected function jsonData(): array
     {
         return [
-            'articleId' => $this->getArticleId(),
-            'title' => $this->getTitle(),
-            'description' => $this->getDescription(),
-            'slug' => $this->getSlug(),
+            'article_id' => $this->articleId,
+            'title' => $this->title,
+            'description' => $this->description,
         ];
-
     }
 }

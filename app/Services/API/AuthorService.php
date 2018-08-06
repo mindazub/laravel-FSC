@@ -1,11 +1,18 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: mindazub
- * Date: 2018.07.20
- * Time: 14:19
+ * @copyright C VR Solutions 2018
+ *
+ * This software is the property of VR Solutions
+ * and is protected by copyright law – it is NOT freeware.
+ *
+ * Any unauthorized use of this software without a valid license key
+ * is a violation of the license agreement and will be prosecuted by
+ * civil and criminal law.
+ *
+ * Contact VR Solutions:
+ * E-mail: vytautas.rimeikis@gmail.com
+ * http://www.vrwebdeveloper.lt
  */
-
 
 declare(strict_types = 1);
 
@@ -15,7 +22,6 @@ use App\Author;
 use App\DTO\AuthorDTO;
 use App\Exceptions\AuthorException;
 use App\Services\ApiService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
@@ -24,18 +30,15 @@ use Illuminate\Pagination\LengthAwarePaginator;
  */
 class AuthorService extends ApiService
 {
-
-    const PER_PAGE = 3  ;
-
     /**
      * @param int $page
      * @return LengthAwarePaginator
      * @throws \App\Exceptions\ApiDataException
      */
-    public function getPaginateData(int $page = 1): LengthAwarePaginator
+    public function getPaginateData(): LengthAwarePaginator
     {
         /** @var LengthAwarePaginator $authors */
-        $authors = Author::paginate(self::PER_PAGE);
+        $authors = Author::paginate();
 
         if ($authors->isEmpty()) {
             throw AuthorException::noData();
@@ -44,46 +47,14 @@ class AuthorService extends ApiService
         return $authors;
     }
 
-
-    /**
-     * @param int $page
-     * @return LengthAwarePaginator
-     * @throws \App\Exceptions\ApiDataException
-     */
-    public function getFullData(int $page = 1): LengthAwarePaginator
-    {
-        /** @var LengthAwarePaginator $articles */
-        $authors = Author::with( 'articles')->paginate(self::PER_PAGE,['*'], 'page', $page);
-
-//        dd($authors);
-
-        if($authors ->isEmpty())
-        {
-            throw AuthorException::noData();
-        }
-
-        return $authors;
-
-    }
-
-
-    /**
-     * @param int $authorId
-     * @return AuthorDTO
-     * @throws \App\Exceptions\ApiDataException
-     */
     public function getById(int $authorId): AuthorDTO
     {
         /** @var Author $author */
-        $author = Author::find($authorId);
-
-        if (is_null($author)){
-            throw AuthorException::noData();
-        }
+        $author = Author::findOrFail($authorId);
 
         $dto = new AuthorDTO();
 
-        return $dto->setAuthorId($author->id)
+        return $dto->setAuthorid($author->id)
             ->setFirstName($author->first_name)
             ->setLastName($author->last_name);
     }

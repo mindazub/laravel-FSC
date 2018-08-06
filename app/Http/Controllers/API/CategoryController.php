@@ -1,16 +1,28 @@
 <?php
+/**
+ * @copyright C VR Solutions 2018
+ *
+ * This software is the property of VR Solutions
+ * and is protected by copyright law – it is NOT freeware.
+ *
+ * Any unauthorized use of this software without a valid license key
+ * is a violation of the license agreement and will be prosecuted by
+ * civil and criminal law.
+ *
+ * Contact VR Solutions:
+ * E-mail: vytautas.rimeikis@gmail.com
+ * http://www.vrwebdeveloper.lt
+ */
+
+declare(strict_types = 1);
 
 namespace App\Http\Controllers\API;
 
-use App\Exceptions\ApiDataException;
+use App\DTO\PaginatorDTO;
 use App\Exceptions\CategoryException;
-use App\Services\API\CategoryService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Throwable;
+use App\Services\API\CategoryService;
+use Illuminate\Http\JsonResponse;
 
 /**
  * Class CategoryController
@@ -18,6 +30,9 @@ use Throwable;
  */
 class CategoryController extends Controller
 {
+    /**
+     * @var CategoryService
+     */
     private $categoryService;
 
     /**
@@ -26,141 +41,62 @@ class CategoryController extends Controller
      */
     public function __construct(CategoryService $categoryService)
     {
-        return $this->categoryService = $categoryService;
+        $this->categoryService = $categoryService;
     }
 
-
     /**
-     * @param Request $request
      * @return JsonResponse
      */
-    public function getPaginate(Request $request): JsonResponse
+    public function index(): JsonResponse
     {
-
         try {
-
-            $categories = $this->categoryService->getPaginateData();
-
-//            dd($categories);
+            /** @var PaginatorDTO $categories */
+            $categories = $this->categoryService->getPaginateDTOData();
 
             return response()->json([
-//                'data' => $categories->getCollection(),
                 'status' => true,
                 'data' => $categories,
-
-//                'current_page' => $categories->currentPage(),
-//                'total_page' => $categories->lastPage()
             ]);
         } catch (CategoryException $exception) {
-
-            logger($exception->getMessage(), [
-                    'trace' => $exception->getTrace(),
+            return response()->json(
+                [
+                    'status' => false,
                     'message' => $exception->getMessage(),
                     'code' => $exception->getCode(),
-                    'page' => $request->page,
-                    'url' => $request->url()
-                ]
+                ],
+                JsonResponse::HTTP_NOT_FOUND
             );
-
-            return response()->json([
-                'status' => false,
-                'message' => $exception->getMessage(),
-                'code' => $exception->getCode(),
-            ], JsonResponse::HTTP_NOT_FOUND);
-        } catch (Throwable $exception) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Something wrong...',
-                'code' => JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
-
-    }
-
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     * @throws ApiDataException
-     */
-    public function getFullData(Request $request): JsonResponse
-    {
-        try {
-
-            $categories = $this->categoryService->getFullData((int)$request->page);
-
-            return response()->json([
-                'success' => true,
-                'data' => $categories,
-            ]);
-
-        } catch (CategoryException $exception) {
-            return response()->json([
-                'success' => false,
-                'message' => $exception->getMessage(),
-                'code' => $exception->getCode(),
-            ], JsonResponse::HTTP_NOT_FOUND);
-        } catch (Throwable $exception) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Something wrong ...',
-                'code' => $exception->getCode(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-    /**
-     * @param Request $request
-     * @param int $id
-     * @return JsonResponse
-     */
-    public function getById(Request $request): JsonResponse
-    {
-
-//dd((int)$request->category);
-
-        try {
-
-            $category = $this->categoryService->getById((int)$request->category);
-
-//            dd($category);
-
-            return response()->json([
-                'success' => true,
-                'data' => $category,
-
-            ]);
-
-
-//            return $category;
-
-        } catch (ModelNotFoundException $exception) {
-            logger([
-                $exception->getMessage(),
-                'code' => $exception->getCode(),
-                'categoryId' => $categoryId,
-                'path' => $request->path(),
-                'url' => $request->url(),
-            ]);
-            return response()->json([
-                'success' => false,
-                'code' => $exception->getCode(),
-                'message' => 'No data found',
-            ], JsonResponse::HTTP_NOT_FOUND);
         } catch (\Throwable $exception) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => 'Something wrong',
+                    'code' => JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+                ],
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 
-            dd($exception->getMessage());
+    /**
+     * @param int $category
+     * @return JsonResponse
+     */
+    public function show(int $category): JsonResponse
+    {
+        try {
+            $categoryData = $this->categoryService->getById($category);
 
             return response()->json([
-
-
-                'success' => false,
-                'message' => 'Something wrong',
-                'code' => $exception->getCode(),
+                'status' => true,
+                'data' => $categoryData,
             ]);
+        } catch (\Throwable $exception) {
+            return response()->json([
+                'status' => false,
+                'message' => $exception->getMessage(),
+                'code' => $exception->getCode(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
-
     }
 }

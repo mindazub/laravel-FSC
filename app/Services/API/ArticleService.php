@@ -1,91 +1,83 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: mind
- * Date: 18.7.16
- * Time: 18.55
+ * @copyright C VR Solutions 2018
+ *
+ * This software is the property of VR Solutions
+ * and is protected by copyright law – it is NOT freeware.
+ *
+ * Any unauthorized use of this software without a valid license key
+ * is a violation of the license agreement and will be prosecuted by
+ * civil and criminal law.
+ *
+ * Contact VR Solutions:
+ * E-mail: vytautas.rimeikis@gmail.com
+ * http://www.vrwebdeveloper.lt
  */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Services\API;
 
+use App\Category;
 use App\DTO\ArticleDTO;
 use App\DTO\ArticleFullDTO;
 use App\DTO\ArticlesDTO;
 use App\DTO\AuthorDTO;
-use App\DTO\CategoryDTO;
 use App\DTO\CategoriesDTO;
+use App\DTO\CategoryDTO;
 use App\DTO\PaginatorDTO;
-use App\Exceptions\ApiDataException;
 use App\Exceptions\ArticleException;
-use App\Services\ApiService;
-use \Exception;
 use App\Article;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
+use App\Services\ApiService;
+use Illuminate\Pagination\LengthAwarePaginator;
 
+/**
+ * Class ArticleService
+ * @package App\Services\API
+ */
 class ArticleService extends ApiService
 {
-    const PER_PAGE = 3;
-
     /**
-     * @param int $page
-     * @return LengthAwarePaginator
-     * @throws ApiDataException
+     * @return PaginatorDTO
+     * @throws \App\Exceptions\ApiDataException
      */
     public function getPaginateData(): PaginatorDTO
     {
         /** @var LengthAwarePaginator $articles */
         $articles = Article::paginate(self::PER_PAGE);
 
-//        dd($articles);
-
         if ($articles->isEmpty()) {
             throw ArticleException::noData();
         }
 
         $articlesDTO = new ArticlesDTO();
 
-//        dd($articlesDTO);
-
+        /** @var Article $article */
         foreach ($articles as $article) {
-
             $articlesDTO->setArticle(
-                (new ArticleDTO())
-                    ->setArticleId($article->id)
-                    ->setTitle($article->title)
-                    ->setDescription($article->description)
-                    ->setSlug($article->slug)
+                new ArticleDTO($article->id, $article->title, $article->description)
             );
         }
-
-//        dd($articles);
-
 
         return new PaginatorDTO(
             $articles->currentPage(),
             collect($articlesDTO)->get('data'),
             $articles->lastPage(),
-            $articles->total(),
             $articles->perPage(),
+            $articles->total(),
             $articles->nextPageUrl(),
             $articles->previousPageUrl()
         );
     }
 
     /**
-     * @param int $page
      * @return LengthAwarePaginator
-     * @throws ApiDataException
+     * @throws \App\Exceptions\ApiDataException
      */
-    public function getFullData(int $page = 1): LengthAwarePaginator
+    public function getFullData(): PaginatorDTO
     {
         /** @var LengthAwarePaginator $articles */
-        $articles = Article::with('author', 'categories')->paginate(self::PER_PAGE, ['*'], 'page', $page);
-
-//        dd($articles);
+        $articles = Article::with(['author', 'categories'])->paginate(self::PER_PAGE);
 
         if ($articles->isEmpty()) {
             throw ArticleException::noData();
@@ -93,109 +85,80 @@ class ArticleService extends ApiService
 
         $articlesDTO = new ArticlesDTO();
 
+        /** @var Article $article */
         foreach ($articles as $article) {
-            /** @var category $categoryDTO */
-            $categoriesDTO = new CategoriesDTO();
-            foreach ($article->categories as $category) {
-                $categoriesDTO->setCategory(
-                    (new CategoryDTO())
-                        ->setCategoryId($category->categoryId)
-                        ->setTitle($category->title)
-                        ->setSlug($category->slug)
+            $articleDTO = new ArticleDTO($article->id, $article->title, $article->description);
 
+            $author = $article->author;
+            $authorDTO = (new AuthorDTO())->setAuthorId($author->id)
+                ->setFirstName($author->first_name)
+                ->setLastName($author->last_name);
+
+            $categoriesDTO = new CategoriesDTO();
+
+            foreach ($article->categories as $category) {
+                $categoriesDTO->setCategoryData(
+                    new CategoryDTO($category->id, $category->title, $category->slug)
                 );
             }
-            $authorDTO = (new AuthorDTO())
-//                ->setAuthorId($article->author->authorId)
-                ->setAuthorId(1)
-                ->setFirstName($article->author->firstName)
-                ->setLastName($article->author->lastName);
 
-            dd($authorDTO);
-
-            $articleFullDTO = new ArticleFullDTO(
-                (new ArticleDTO)
-                    ->setArticleId($article->articleId)
-                    ->setTitle($article->title)
-                    ->setSlug($article->slug)
-                    ->setDescription($article->description),
-                $authorDTO,
-                collect($categoriesDTO)->get('data')
+            $articlesDTO->setArticle(
+                new ArticleFullDTO($articleDTO, $authorDTO, $categoriesDTO)
             );
-            $articlesDTO->setArticle($articleFullDTO);
         }
 
         return new PaginatorDTO(
             $articles->currentPage(),
             collect($articlesDTO)->get('data'),
-            $articles->total(),
             $articles->lastPage(),
             $articles->perPage(),
+            $articles->total(),
             $articles->nextPageUrl(),
             $articles->previousPageUrl()
         );
-
     }
 
     /**
      * @param int $articleId
      * @return ArticleDTO
      */
-    public function getByIdForApi(int $articleId = 1): ArticleDTO
+    public function getByIdForApi(int $articleId): ArticleDTO
     {
-
+        /** @var Article $article */
         $article = Article::findOrFail($articleId);
 
-        $dto = new ArticleDTO();
-
-
-        return $dto->setArticleId($article->id)
-            ->setTitle($article->title)
-            ->setDescription($article->description)
-            ->setSlug($article->slug);
-
-
+        return new ArticleDTO($article->id, $article->title, $article->description);
     }
-
 
     /**
      * @param int $articleId
      * @return ArticleFullDTO
      */
-    public function getByIdFull(int $articleId): ArticleFullDTO
+    public function getFullByIdForApi(int $articleId): ArticleFullDTO
     {
-
+        /** @var Article $article */
         $article = Article::with('author', 'categories')->findOrFail($articleId);
 
-//dd($article);
+        // make ArticleDtTO object
+        $articleDTO = new ArticleDTO($article->id, $article->title, $article->description);
 
-        $articleDTO = (new ArticleDTO)->setArticleId($article->id)
-            ->setTitle($article->title)
-            ->setSlug($article->slug)
-            ->setDescription($article->description);
-
-//        dd($articleDTO);
-
-        $authorDTO = (new AuthorDTO)
-            ->setAuthorId($article->author->id)
+        //make AuthorDTO object
+        $authorDTO = (new AuthorDTO())->setAuthorId($article->author->id)
             ->setFirstName($article->author->first_name)
             ->setLastName($article->author->last_name);
 
-//dd($authorDTO);
-
+        // make empty CategoriesDTO object for CategoryDTO collection
         $categoriesDTO = new CategoriesDTO();
 
-//dd($categoriesDTO);
-
-
+        /** @var Category $category */
         foreach ($article->categories as $category) {
-            $categoriesDTO->setCategory(
-                (new CategoryDTO)
-                    ->setCategoryId($category->id)
-                    ->setTitle($category->title)
-                    ->setSlug($category->slug)
+            // push CategoryDTO to CategoriesDTO
+            $categoriesDTO->setCategoryData(
+                new CategoryDTO($category->id, $category->title, $category->slug)
             );
         }
+
+        // return ArticleFullDTO object
         return new ArticleFullDTO($articleDTO, $authorDTO, $categoriesDTO);
     }
 }
