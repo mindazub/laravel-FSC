@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Http\Requests;
 
 use App\Article;
+use App\Repositories\ArticleRepository;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Str;
 
@@ -58,19 +59,15 @@ class ArticleUpdateRequest extends ArticleStoreRequest
      */
     protected function slugExists(): bool
     {
-        $slug = Article::whereSlug($this->getSlug())
-            ->where(
-                'id',
-                '!=',
-                $this->route()->parameter('article')
-            )
-            ->get();
+        /** @var TYPE_NAME $articleRepository */
+        $articleRepository = app(ArticleRepository::class);
 
-        if (!empty($slug->toArray())) {
-            return true;
-        }
+        $slug = $articleRepository->getBySlugAndNotById(
+            $this->getSlug(),
+            (int)$this->route()->parameter('article')
+        );
 
-        return false;
+        return !empty($slug);
     }
 
     /**

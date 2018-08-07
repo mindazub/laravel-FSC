@@ -70,7 +70,7 @@ class ArticleController extends Controller
 
         /** @var Collection $authors */
 //        $authors = Author::all();
-        $authors = $this->authorsRepository->all();
+        $authors = $this->authorRepository->all();
 
         return view('article.create', compact('authors', 'categories'));
     }

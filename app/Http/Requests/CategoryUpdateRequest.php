@@ -18,7 +18,7 @@ declare(strict_types = 1);
 
 namespace App\Http\Requests;
 
-use App\Category;
+use App\Repositories\CategoryRepository;
 use Illuminate\Contracts\Validation\Validator;
 
 /**
@@ -67,12 +67,17 @@ class CategoryUpdateRequest extends CategoryStoreRequest
 
     /**
      * @return bool
+     * @throws \Exception
      */
     private function slugExists(): bool
     {
-        $category = Category::where('slug', '=', $this->getSlug())
-            ->where('id', '!=', $this->route()->parameter('category')->id)
-            ->first();
+        /** @var CategoryRepository $categoryRepository */
+        $categoryRepository = app(CategoryRepository::class);
+
+        $categoryRepository->getBySlugAndNotId(
+            $this->getSlug(),
+            (int)$this->route()->parameter('category')
+        );
 
         if (!empty($category)) {
             return true;
@@ -88,4 +93,6 @@ class CategoryUpdateRequest extends CategoryStoreRequest
     {
         return ($this->input('slug')) ?? parent::getSlug();
     }
+
+
 }

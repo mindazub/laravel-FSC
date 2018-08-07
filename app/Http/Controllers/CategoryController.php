@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Category;
 use App\Http\Requests\CategoryStoreRequest;
 use App\Http\Requests\CategoryUpdateRequest;
+use App\Repositories\CategoryRepository;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -16,14 +17,32 @@ use Illuminate\View\View;
  */
 class CategoryController extends Controller
 {
+
+    /**
+     * @var CategoryRepository
+     */
+    private $categoryRepository;
+
+
+    /**
+     * CategoryController constructor.
+     * @param CategoryRepository $categoryRepository
+     */
+    public function __construct(CategoryRepository $categoryRepository)
+    {
+        $this->categoryRepository = $categoryRepository;
+
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return View
+     * @throws \Exception
      */
     public function index(): View
     {
-        $categories = Category::paginate();
+        $categories = $this->categoryRepository->paginate();
 
         return view('category.list', compact('categories'));
     }
@@ -43,10 +62,11 @@ class CategoryController extends Controller
      *
      * @param CategoryStoreRequest $request
      * @return RedirectResponse
+     * @throws \Exception
      */
     public function store(CategoryStoreRequest $request): RedirectResponse
     {
-        Category::create([
+        $this->categoryRepository->create([
             'title' => $request->getTitle(),
             'slug' => $request->getSlug(),
         ]);
@@ -70,15 +90,17 @@ class CategoryController extends Controller
 
     /**
      * @param CategoryUpdateRequest $request
-     * @param Category $category
+     * @param int $categoryId
      * @return RedirectResponse
+     * @throws \Exception
      */
-    public function update(CategoryUpdateRequest $request, Category $category): RedirectResponse
+    public function update(CategoryUpdateRequest $request, int $categoryId): RedirectResponse
     {
-        $category->title = $request->getTitle();
-        $category->slug = $request->getSlug();
+        $this->categoryRepository->update([
+            'title' => $request->getTitle(),
+            'slug' => $request->getSlug()
 
-        $category->save();
+        ], $categoryId);
 
         return redirect()
             ->route('category.index')

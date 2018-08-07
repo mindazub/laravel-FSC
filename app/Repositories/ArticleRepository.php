@@ -20,8 +20,40 @@ class ArticleRepository extends Repository
      */
     public function model(): string
     {
-        // TODO: Implement model() method.
         return Article::class;
+    }
+
+    public function getBySlugAndNotById(string $slug, int $id)
+    {
+        return $this->getBySlugBuilder($slug)
+            ->where('id', '!=', $id)
+            ->first();
+    }
+
+    /**
+     *
+     * Return first from DB if not found
+     *
+     * @param string $slug
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|null|object
+     * @throws \Exception
+     */
+    public function getBySlug(string $slug)
+    {
+        return $this->getBySlugBuilder($slug)->first();
+
+    }
+
+    /**
+     * @param string $slug
+     * @return \Illuminate\Database\Eloquent\Builder
+     * @throws \Exception
+     */
+    public function getBySlugBuilder(string $slug)
+    {
+        return $this->makeQuery()
+            ->where('slug', $slug);
+
     }
 
 }

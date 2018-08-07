@@ -21,8 +21,13 @@ namespace App\Http\Controllers;
 use App\Services\UserService;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\View\View;
 
+/**
+ * Class UserController
+ * @package App\Http\Controllers
+ */
 class UserController extends Controller
 {
     /**
@@ -47,7 +52,12 @@ class UserController extends Controller
      */
     public function index(): View
     {
+        /** @var LengthAwarePaginator|Users[] $users */
         $users = $this->userService->getPaginate();
+
+//        foreach ($users as $user) {
+//            dump($user->email);
+//        }
 
         return view('user.list', compact('users'));
     }

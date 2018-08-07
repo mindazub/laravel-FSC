@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Repositories\UserRepository;
 use App\Services\API\ArticleService;
 use App\Services\API\AuthorService;
 use App\Services\API\CategoryService;
@@ -47,11 +48,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(CategoryService::class);
     }
 
+    /**
+     *
+     */
     public function registerRepositories(): void
     {
         $this->app->singleton(ArticleRepository::class);
         $this->app->singleton(AuthorRepository::class);
         $this->app->singleton(CategoryRepository::class);
-
+        $this->app->singleton(UserRepository::class);
     }
 }

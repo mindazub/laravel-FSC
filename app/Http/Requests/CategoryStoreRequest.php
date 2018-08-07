@@ -18,7 +18,7 @@ declare(strict_types = 1);
 
 namespace App\Http\Requests;
 
-use App\Category;
+use App\Repositories\CategoryRepository;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
@@ -29,6 +29,7 @@ use Illuminate\Support\Str;
  */
 class CategoryStoreRequest extends FormRequest
 {
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -61,7 +62,7 @@ class CategoryStoreRequest extends FormRequest
             if ($this->isMethod('post') && $this->slugExists()) {
                 $validator
                     ->errors()
-                    ->add('title', 'Category with this name allready exists!');
+                    ->add('title', 'Category with this name already exists!');
             }
 
             return;
@@ -72,10 +73,15 @@ class CategoryStoreRequest extends FormRequest
 
     /**
      * @return bool
+     * @throws \Exception
      */
     private function slugExists(): bool
     {
-        $category = Category::where('slug', '=', $this->getSlug())->first();
+
+        /** @var CategoryRepository $categoryRepository */
+        $categoryRepository = app(CategoryRepository::class);
+
+        $category = $categoryRepository->getBySlug($this->getSlug());
 
         if (!empty($category)) {
             return true;

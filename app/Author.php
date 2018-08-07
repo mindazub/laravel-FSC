@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|Author whereUpdatedAt($value)
  * @method static Builder|Author whereReferenceAuthorId($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Article[] $articles
  */
 class Author extends Model
 {

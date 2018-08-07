@@ -4,11 +4,10 @@ declare(strict_types = 1);
 
 namespace App\Http\Requests;
 
-use App\Article;
+use App\Repositories\ArticleRepository;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 /**
  * Class ArticleStoreRequest
@@ -54,7 +53,7 @@ class ArticleStoreRequest extends FormRequest
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getAuthorId(): int
     {
@@ -82,22 +81,19 @@ class ArticleStoreRequest extends FormRequest
 
     /**
      * @return bool
+     * @throws \Exception
      */
     protected function slugExists(): bool
     {
-        $title = $this->getTitle();
 
-        if(!$title) {
-            return true;
-        }
+        /** @var ArticleRepository $articleRepository */
+        $articleRepository = app(ArticleRepository::class);
 
-        $slug = Article::whereSlug($title)->get();
 
-        if (!empty($slug->toArray())) {
-            return true;
-        }
+        $slug = $articleRepository->getBySlug($this->getSlug());
 
-        return false;
+
+        return !empty($slug);
     }
 
     /**
