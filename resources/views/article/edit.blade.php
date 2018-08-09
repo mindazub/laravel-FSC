@@ -17,7 +17,7 @@
                             </div>
                         @endif
 
-                        <form action="{{ route('article.update', [$article->id]) }}" method="post">
+                        <form action="{{ route('article.update', [$article->id]) }}" method="post" enctype="multipart/form-data">
 
                             {{ method_field('put') }}
 
@@ -31,6 +31,19 @@
                                     <div class="alert-danger">{{ $errors->first('title') }}</div>
                                 @endif
                             </div>
+
+                            <div class="form-group">
+                                <label for="cover">{{ __('Cover') }}</label>
+                                @if($article->cover)
+                                    <img width="200" src="{{ Storage::url($article->cover) }}" alt="">
+                                @endif
+                                <input type="file" id="cover" class="form-control" name="cover" accept=".jpg, .jpeg, .png">
+
+                            </div>
+
+                            @if($errors->has('cover'))
+                                <div class="alert-danger">{{ $errors->first('cover') }}</div>
+                            @endif
 
                             <div class="form-group">
                                 <label for="description">{{ __('Description') }}:</label>
@@ -51,23 +64,6 @@
                                 </select>
                                 @if($errors->has('author_id'))
                                     <div class="alert-danger">{{ $errors->first('author_id') }}</div>
-                                @endif
-                            </div>
-
-                            <div class="form_group">
-                                <label>{{ __('Categories') }}</label>
-                                <br>
-                                @foreach($categories as $category)
-                                    <label for="category_{{ $category->id }}">
-                                        <input id="category_{{ $category->id }}" type="checkbox" name="category[]"
-                                               value="{{ $category->id }}"
-                                                {{ (in_array($category->id, old('category', $article->categories->pluck('id')->toArray())) ? 'checked' : '') }}
-                                        > {{ $category->title }}
-                                    </label>
-                                    <br>
-                                @endforeach
-                                @if($errors->has('category'))
-                                    <div class="alert-danger">{{ $errors->first('category') }}</div>
                                 @endif
                             </div>
 

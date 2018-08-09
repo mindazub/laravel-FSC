@@ -23,6 +23,10 @@
                                 <td>{{ $article->title }}</td>
                             </tr>
                             <tr>
+                                <td>{{ __('Cover') }}:</td>
+                                <td><img width="300" src="{{ Storage::url($article->cover) }}"></td>
+                            </tr>
+                            <tr>
                                 <td>{{ __('Description') }}:</td>
                                 <td>{{ $article->description }}</td>
                             </tr>

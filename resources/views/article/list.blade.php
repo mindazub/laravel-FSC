@@ -30,6 +30,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Title</th>
+                                <th>Cover</th>
                                 <th>Slug</th>
                                 <th>Actions</th>
                             </tr>
@@ -38,6 +39,14 @@
                                 <tr>
                                     <td>{{ $article->id }}</td>
                                     <td>{{ $article->title }}</td>
+                                    <td>
+                                        @if($article->cover)
+                                            <img width="100" src="{{ Storage::url($article->cover) }}">
+
+                                        @endif
+
+                                    </td>
+
                                     <td>{{ $article->slug }}</td>
                                     <td>
                                         <a class="btn btn-sm btn-info" href="{{ route('article.show', [$article->id]) }}">{{ __('View') }}</a>

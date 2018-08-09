@@ -59,7 +59,7 @@ class ArticleUpdateRequest extends ArticleStoreRequest
      */
     protected function slugExists(): bool
     {
-        /** @var TYPE_NAME $articleRepository */
+        /** @var ArticleRepository $articleRepository */
         $articleRepository = app(ArticleRepository::class);
 
         $slug = $articleRepository->getBySlugAndNotById(
@@ -77,4 +77,6 @@ class ArticleUpdateRequest extends ArticleStoreRequest
     {
         return Str::slug($this->input('slug') ?: $this->getTitle());
     }
+
+
 }

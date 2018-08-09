@@ -19,6 +19,8 @@ use Illuminate\View\View;
 
 class ArticleController extends Controller
 {
+
+    const COVER_DIRECTORY = 'articles';
     /**
      * @var ArticleRepository
      */
@@ -80,15 +82,21 @@ class ArticleController extends Controller
      *
      * @param ArticleStoreRequest $request
      * @return RedirectResponse
+     * @throws \Exception
      */
     public function store(ArticleStoreRequest $request): RedirectResponse
     {
         $data = [
             'title' => $request->getTitle(),
+            'cover' => $request->getCover() ? $request->getCover()->store(self::COVER_DIRECTORY) : null,
             'description' => $request->getDescription(),
             'author_id' => $request->getAuthorId(),
             'slug' => $request->getSlug(),
         ];
+
+//        if ($request->getCover()) {
+//            $data['cover'] = $request->getCover();
+//        }
 
 //        $article = Article::create($data);
         $article = $this->articleRepository->create($data);
@@ -103,8 +111,9 @@ class ArticleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Article $article
+     * @param int $articleId
      * @return View
+     * @throws \Exception
      */
 //    public function show(Article $article): View
     public function show(int $articleId): View
@@ -120,6 +129,7 @@ class ArticleController extends Controller
      *
      * @param  \App\Article $article
      * @return View
+     * @throws \Exception
      */
     public function edit(Article $article): View
     {
@@ -139,14 +149,20 @@ class ArticleController extends Controller
      */
     public function update(ArticleUpdateRequest $request, int $articleId): RedirectResponse
     {
-
-        $this->articleRepository->update([
+        $data = [
             'title' => $request->getTitle(),
             'description' => $request->getDescription(),
             'author_id' => $request->getAuthorId(),
             'slug' => $request->getSlug(),
 
-        ], $articleId);
+        ];
+
+        if($request->getCover()) {
+            $data['cover'] = $request->getCover()->store(self::COVER_DIRECTORY);
+        }
+
+
+        $this->articleRepository->update($data, $articleId);
 
         /** @var Article $article */
         $article = $this->articleRepository->find($articleId);
