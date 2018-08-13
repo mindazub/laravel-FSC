@@ -43,7 +43,9 @@ class ContactController extends Controller
 
         } catch (\Throwable $exception)
         {
-            return redirect()->back()->with('error', $exception->getMessage());
+            return redirect()->back()
+                ->with('error', $exception->getMessage())
+                ->withInput();
         }
         return redirect()->route('contacts')->with('status', 'Message sent.');
 
