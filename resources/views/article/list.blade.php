@@ -9,6 +9,7 @@
                     <div class="card-header">
                         Articles List
                         <a class="btn btn-sm btn-primary" href="{{ route('article.create') }}">{{ __('New') }}</a>
+
                     </div>
 
                     <div class="card-body">
