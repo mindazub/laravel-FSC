@@ -1,1 +1,3 @@
-##ABOUT PROJECT --- homework
+##ABOUT PROJECT 
+
+Project progress in class
