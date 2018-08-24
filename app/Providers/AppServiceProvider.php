@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Repositories\ArticleRepository;
+use App\Repositories\AuthorRepository;
+use App\Repositories\CategoryRepository;
 use App\Repositories\UserRepository;
 use App\Services\API\ArticleService;
 use App\Services\API\AuthorService;
