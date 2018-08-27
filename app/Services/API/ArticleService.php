@@ -28,6 +28,7 @@ use App\DTO\CategoryDTO;
 use App\DTO\PaginatorDTO;
 use App\Exceptions\ArticleException;
 use App\Article;
+use App\Repositories\ArticleRepository;
 use App\Services\ApiService;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -37,6 +38,20 @@ use Illuminate\Pagination\LengthAwarePaginator;
  */
 class ArticleService extends ApiService
 {
+
+    /**
+     * @var ArticleRepository
+     */
+    private $articleRepository;
+
+    /**
+     * ArticleService constructor.
+     * @param ArticleRepository $articleRepository
+     */
+    public function __construct(ArticleRepository $articleRepository)
+    {
+        $this->articleRepository = $articleRepository;
+    }
     /**
      * @return PaginatorDTO
      * @throws \App\Exceptions\ApiDataException
@@ -44,7 +59,7 @@ class ArticleService extends ApiService
     public function getPaginateData(): PaginatorDTO
     {
         /** @var LengthAwarePaginator $articles */
-        $articles = Article::paginate(self::PER_PAGE);
+        $articles = $this->articleRepository->paginate();
 
         if ($articles->isEmpty()) {
             throw ArticleException::noData();
@@ -77,7 +92,10 @@ class ArticleService extends ApiService
     public function getFullData(): PaginatorDTO
     {
         /** @var LengthAwarePaginator $articles */
-        $articles = Article::with(['author', 'categories'])->paginate(self::PER_PAGE);
+        $query = $this->articleRepository
+            ->with(['author', 'categories']);
+
+        $articles->query->paginate();
 
         if ($articles->isEmpty()) {
             throw ArticleException::noData();
@@ -125,7 +143,7 @@ class ArticleService extends ApiService
     public function getByIdForApi(int $articleId): ArticleDTO
     {
         /** @var Article $article */
-        $article = Article::findOrFail($articleId);
+        $article = $this->articleRepository->findOrFail($articleId);
 
         return new ArticleDTO($article->id, $article->title, $article->description);
     }
@@ -137,7 +155,7 @@ class ArticleService extends ApiService
     public function getFullByIdForApi(int $articleId): ArticleFullDTO
     {
         /** @var Article $article */
-        $article = Article::with('author', 'categories')->findOrFail($articleId);
+        $article = $this->articleRepository->with('author', 'categories')->findOrFail($articleId);
 
         // make ArticleDtTO object
         $articleDTO = new ArticleDTO($article->id, $article->title, $article->description);

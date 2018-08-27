@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
  */
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication, InteractsWithDatabase;
+    use CreatesApplication, InteractsWithDatabase, BuildsMocks;
 
     /**
      * @var string

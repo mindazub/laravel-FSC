@@ -8,7 +8,11 @@ use App\Author;
 $factory->define(Article::class, function (Faker $faker) {
     return [
         'title' => $faker->unique()->sentence,
-        'cover' => null,
+        'cover' => 'articles/' . $faker->file(
+            resource_path('img'),
+            storage_path('app/public/articles'),
+            false
+            ),
         'description' => $faker->text(),
         'slug' => $faker->unique()->word,
         'author_id' => function () {
