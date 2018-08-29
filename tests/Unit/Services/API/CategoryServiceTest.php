@@ -65,7 +65,9 @@ class CategoryServiceTest extends TestCase
      * @test
      * @group category
      * @group category-service
+     * @throws CategoryException
      * @throws \App\Exceptions\ApiDataException
+     * @throws \ReflectionException
      */
     public function it_should_get_paginator_dto_data(): void
     {

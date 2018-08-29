@@ -1,20 +1,36 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: mind
- * Date: 18.8.6
- * Time: 18.18
+ * @copyright C VR Solutions 2018
+ *
+ * This software is the property of VR Solutions
+ * and is protected by copyright law – it is NOT freeware.
+ *
+ * Any unauthorized use of this software without a valid license key
+ * is a violation of the license agreement and will be prosecuted by
+ * civil and criminal law.
+ *
+ * Contact VR Solutions:
+ * E-mail: vytautas.rimeikis@gmail.com
+ * http://www.vrwebdeveloper.lt
  */
 
 declare(strict_types = 1);
 
 namespace App\Repositories;
 
-
 use App\Article;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\DB;
 
+/**
+ * Class ArticleRepository
+ * @package App\Repositories
+ */
 class ArticleRepository extends Repository
 {
+
     /**
      * @return string
      */
@@ -23,7 +39,25 @@ class ArticleRepository extends Repository
         return Article::class;
     }
 
-    public function getBySlugAndNotById(string $slug, int $id)
+    /**
+     * Return first row from DB or null if not found
+     *
+     * @param string $slug
+     * @return Builder|\Illuminate\Database\Eloquent\Model|null|object
+     * @throws \Exception
+     */
+    public function getBySlug(string $slug)
+    {
+        return $this->getBySlugBuilder($slug)->first();
+    }
+
+    /**
+     * @param string $slug
+     * @param int $id
+     * @return Builder|\Illuminate\Database\Eloquent\Model|null|object
+     * @throws \Exception
+     */
+    public function getBySlugAndNotId(string $slug, int $id)
     {
         return $this->getBySlugBuilder($slug)
             ->where('id', '!=', $id)
@@ -31,29 +65,33 @@ class ArticleRepository extends Repository
     }
 
     /**
-     *
-     * Return first from DB if not found
-     *
-     * @param string $slug
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|null|object
-     * @throws \Exception
+     * @return LengthAwarePaginator
      */
-    public function getBySlug(string $slug)
+    public function getFullData(): LengthAwarePaginator
     {
-        return $this->getBySlugBuilder($slug)->first();
+        $articles = DB::table('articles')->paginate();
 
+        foreach ($articles as $article) {
+            $article->author = DB::table('authors')->find($article->author_id);
+            $article->categories = DB::table('categories')
+                ->join('article_category', function(JoinClause $q) use ($article) {
+                    $q->on('categories.id', '=', 'article_category.category_id')
+                        ->where('article_category.article_id', '=', $article->id);
+                })
+                ->get(['categories.*']);
+        }
+
+        return $articles;
     }
 
     /**
      * @param string $slug
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      * @throws \Exception
      */
-    public function getBySlugBuilder(string $slug)
+    private function getBySlugBuilder(string $slug): Builder
     {
         return $this->makeQuery()
             ->where('slug', $slug);
-
     }
-
 }

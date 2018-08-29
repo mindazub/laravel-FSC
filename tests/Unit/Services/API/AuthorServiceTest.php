@@ -11,11 +11,11 @@ namespace Tests\Unit\Services\API;
 use App\Author;
 use App\DTO\AuthorDTO;
 use App\Exceptions\AuthorException;
+use App\Repositories\AuthorRepository;
 use App\Services\API\AuthorService;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use Tests\MemoryDatabaseMigrations;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -26,7 +26,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
  */
 class AuthorServiceTest extends TestCase
 {
-    use MemoryDatabaseMigrations;
+
 
     /**
      * @test
@@ -44,9 +44,19 @@ class AuthorServiceTest extends TestCase
      * @group author
      * @group author-service
      * @throws \App\Exceptions\ApiDataException
+     * @throws \ReflectionException
      */
     public function it_should_except_author_exception_on_paginate(): void
     {
+
+//        $author = factory(Author::class)->make();
+
+        $this->initPHPUnitMock(AuthorRepository::class, null, ['paginate'])
+            ->expects($this->once())
+            ->method('paginate')
+            ->willReturn(new LengthAwarePaginator(null, 0, 15));
+
+
         $this->expectException(AuthorException::class);
         $this->expectExceptionMessage(AuthorException::noData()->getMessage());
         $this->expectExceptionCode(AuthorException::noData()->getCode());
@@ -59,11 +69,16 @@ class AuthorServiceTest extends TestCase
      * @group author
      * @group author-service
      * @throws \App\Exceptions\ApiDataException
+     * @throws \ReflectionException
      */
     public function it_should_return_paginator(): void
     {
-        /** @var Collection|Author[] $authors */
-        $authors = factory(Author::class, 2)->create();
+        $authors = factory(Author::class, 2)->make();
+
+        $this->initPHPUnitMock(AuthorRepository::class, null, ['paginate'])
+            ->expects($this->once())
+            ->method('paginate')
+            ->willReturn(new LengthAwarePaginator($authors, 0, 15));
 
         $result = $this->getTestClassInstance()->getPaginateData();
 
@@ -79,7 +94,15 @@ class AuthorServiceTest extends TestCase
      */
     public function it_should_except_exception_by_id(): void
     {
+
         $id = mt_rand(1, 10);
+
+        $this->initPHPUnitMock(AuthorRepository::class, null, ['findOrFail'])
+            ->expects($this->once())
+            ->method('findOrFail')
+            ->with($id)
+            ->willThrowException(new ModelNotFoundException());
+
 
         $this->expectException(ModelNotFoundException::class);
 
@@ -94,13 +117,24 @@ class AuthorServiceTest extends TestCase
      */
     public function it_should_return_author_dto_by_id(): void
     {
+
+
         /** @var Author $author */
-        $author = factory(Author::class)->create();
+        $author = factory(Author::class)->make([
+            'id' => mt_rand(1, 10),
+        ]);
+
+        $this->initPHPUnitMock(AuthorRepository::class, null, ['findOrFail'])
+            ->expects($this->once())
+            ->method('findOrFail')
+            ->with($author->id)
+            ->willReturn($author);
 
         $exceptData = (new AuthorDTO())
             ->setAuthorId($author->id)
             ->setFirstName($author->first_name)
             ->setLastName($author->last_name);
+
 
         $result = $this->getTestClassInstance()->getById($author->id);
 

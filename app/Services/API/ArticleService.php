@@ -29,19 +29,14 @@ use App\DTO\PaginatorDTO;
 use App\Exceptions\ArticleException;
 use App\Article;
 use App\Repositories\ArticleRepository;
-use App\Services\ApiService;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * Class ArticleService
  * @package App\Services\API
  */
-class ArticleService extends ApiService
+class ArticleService
 {
-
-    /**
-     * @var ArticleRepository
-     */
     private $articleRepository;
 
     /**
@@ -52,9 +47,12 @@ class ArticleService extends ApiService
     {
         $this->articleRepository = $articleRepository;
     }
+
+
     /**
      * @return PaginatorDTO
      * @throws \App\Exceptions\ApiDataException
+     * @throws \Exception
      */
     public function getPaginateData(): PaginatorDTO
     {
@@ -86,16 +84,14 @@ class ArticleService extends ApiService
     }
 
     /**
-     * @return LengthAwarePaginator
+     * @return PaginatorDTO
      * @throws \App\Exceptions\ApiDataException
+     * @throws \Exception
      */
     public function getFullData(): PaginatorDTO
     {
         /** @var LengthAwarePaginator $articles */
-        $query = $this->articleRepository
-            ->with(['author', 'categories']);
-
-        $articles->query->paginate();
+        $articles = $this->articleRepository->getFullData();
 
         if ($articles->isEmpty()) {
             throw ArticleException::noData();
@@ -139,6 +135,7 @@ class ArticleService extends ApiService
     /**
      * @param int $articleId
      * @return ArticleDTO
+     * @throws \Exception
      */
     public function getByIdForApi(int $articleId): ArticleDTO
     {
@@ -151,11 +148,13 @@ class ArticleService extends ApiService
     /**
      * @param int $articleId
      * @return ArticleFullDTO
+     * @throws \Exception
      */
     public function getFullByIdForApi(int $articleId): ArticleFullDTO
     {
         /** @var Article $article */
-        $article = $this->articleRepository->with('author', 'categories')->findOrFail($articleId);
+        $article = $this->articleRepository->with(['author', 'categories'])
+            ->findOrFail($articleId);
 
         // make ArticleDtTO object
         $articleDTO = new ArticleDTO($article->id, $article->title, $article->description);
